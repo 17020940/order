@@ -1,4 +1,8 @@
-<button (click)="getBluetoothDevice()">location</button>
+<button (click)="getLocation()">Get Location</button>
+<div>Vĩ độ: {{latitude}}</div>
 
-<div>latitude</div>
-<div>{{latitude}}</div>
+<div>Kinh độ: {{longitude}}</div>
+
+<button (click)="getBluetoothDevice()">Get Batery Device</button>
+
+<div>Battery: {{battery}}</div>
