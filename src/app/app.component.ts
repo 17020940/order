@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { connectableObservableDescriptor } from 'rxjs/internal/observable/ConnectableObservable';
 
 @Component({
@@ -10,7 +10,8 @@ export class AppComponent {
   title = 'order';
   latitude;
   longitude;
-  battery;
+  jwtToken;
+  server;
 
   getLocation() {
     let option = { enableHighAccuracy: true, }
@@ -21,28 +22,43 @@ export class AppComponent {
     });
   }
 
-  getBluetoothDevice() {
+  getGATTServer() {
     let nav: any = navigator;
     nav.bluetooth.requestDevice({
-      filters: [{services: ['battery_service']}]
+      filters: [{ services: ['battery_service'] }]
     })
-    .then(device => {
-      return device.gatt.connect();
+      .then(device => {
+        console.log(device)
+        return device.gatt.connect();
+      })
+      .then(server => {
+        this.server = server;
+      })
+      .catch()
+  }
+  getJWT() {
+    let nav: any = navigator;
+    nav.bluetooth.requestDevice({
+      filters: [{ services: ['battery_service'] }]
     })
-    .then(server => {
-      console.log(server)
-      return server.getPrimaryService('battery_service');
-    })
-    .then(service => {
-      return service.getCharacteristic('battery_level');
-    })
-    .then(characteristic => {
-      return characteristic.readValue();
-    })
-    .then(value => {
-      this.battery = value.getUint8(0);
-    })
-    .catch()
+      .then(device => {
+        console.log(device)
+        return device.gatt.connect();
+      })
+      .then(server => {
+        return server.getPrimaryService('battery_service');
+      })
+      .then(service => {
+        return service.getCharacteristic('battery_level');
+      })
+      .then(characteristic => {
+        return characteristic.readValue();
+      })
+      .then(value => {
+        let enc = new TextDecoder("utf-8");
+        this.jwtToken = enc.decode(value.buffer);
+      })
+      .catch()
 
   }
 }
