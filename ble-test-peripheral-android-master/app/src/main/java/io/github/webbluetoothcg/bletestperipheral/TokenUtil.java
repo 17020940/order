@@ -12,29 +12,41 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 public class TokenUtil {
-    private static final String secretKey = "hoiLamGiKhongBaoDau";
+    private String secretKey;
+
+    public TokenUtil(String secretKey){
+        this.secretKey = secretKey;
+    }
+
+    public String getSecretKey() {
+        return secretKey;
+    }
+
+    public void setSecretKey(String secretKey) {
+        this.secretKey = secretKey;
+    }
 
     private static final String JWT_HEADER = "{\"alg\":\"HS256\",\"typ\":\"JWT\"}";
 
-    public static String generateJWT() throws Exception{
-        String header = encode(JWT_HEADER.getBytes());
+    public String generateJWT() throws Exception{
+        String header = encode(JWT_HEADER.getBytes(StandardCharsets.UTF_8));
         String payload = getPayload();
         String signature = hmacSha256(header + "." + payload, secretKey);
         return header + "." + payload + "." + signature;
     }
 
-    private static String encode(byte[] bytes) {
-        return Base64.encodeToString(bytes, Base64.NO_WRAP | Base64.NO_PADDING);
+    private  String encode(byte[] bytes) {
+        return Base64.encodeToString(bytes, Base64.NO_PADDING | Base64.NO_WRAP | Base64.URL_SAFE );
     }
 
-    private static String getPayload() throws JSONException {
+    private  String getPayload() throws JSONException {
         JSONObject payload = new JSONObject();
         payload.put("restaurentId", "1");
         payload.put("exp", new Date().getTime());
-        return encode(payload.toString().getBytes());
+        return encode(payload.toString().getBytes(StandardCharsets.UTF_8));
     }
 
-    private static String hmacSha256(String data, String secret) throws  Exception {
+    private  String hmacSha256(String data, String secret) throws  Exception {
         try {
 
             //MessageDigest digest = MessageDigest.getInstance("SHA-256");

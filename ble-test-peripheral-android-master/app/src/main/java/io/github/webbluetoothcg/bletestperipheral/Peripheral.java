@@ -151,7 +151,8 @@ public class Peripheral extends Activity implements ServiceFragmentDelegate {
       }
       String jwt="";
       try {
-        jwt = TokenUtil.generateJWT();
+        TokenUtil tokenUtil = new TokenUtil("test19021999a@asdas");
+        jwt = tokenUtil.generateJWT();
       } catch (Exception e) {
         e.printStackTrace();
       }
@@ -327,6 +328,7 @@ public class Peripheral extends Activity implements ServiceFragmentDelegate {
 
   @Override
   protected void onStart() {
+
     super.onStart();
     resetStatusViews();
     // If the user disabled Bluetooth when the app was in the background,

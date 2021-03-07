@@ -17,6 +17,8 @@
 package io.github.webbluetoothcg.bletestperipheral;
 
 import android.app.ListActivity;
+import android.bluetooth.BluetoothManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -38,6 +40,9 @@ public class Peripherals extends ListActivity {
         /* id of the TextView to use */ android.R.id.text1,
         /* values for the list */ PERIPHERALS_NAMES);
     setListAdapter(adapter);
+//    String secretKey = "ducnha99bn@1234";
+//    BLEBroadcaster broadcaster = new BLEBroadcaster((BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE), new TokenUtil(secretKey));
+//    broadcaster.start();
   }
 
   @Override
