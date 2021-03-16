@@ -188,6 +188,11 @@ module.exports = (app) => {
     categoryCustomer.getCategories
   );  
 
+  app.get(
+    "/api/item",
+    categoryCustomer.getItem
+  ); 
+
   const LanguageSchedule = require("../schedule/language.schedule");
 
   const StateInterval = () => {
