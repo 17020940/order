@@ -1,4 +1,4 @@
-import React, { memo } from "react";
+import React, { memo, useState, useEffect } from "react";
 import { Link } from "react-router-dom"
 import {
   makeStyles,
@@ -56,6 +56,36 @@ function getToken() {
     .catch(e => console.log(e));
 }
 
+function CategoryDetail({ category, value, index }) {
+  const [items, setItems] = useState([]);
+
+  useEffect(() => {
+    fetch("http://localhost:5000/api/item?categoryId=" + category.id)
+      .then(res => res.json())
+      .then(res => {
+        setItems(res.data)
+      })
+      .catch()
+  }, [])
+
+  return (
+    <TabPanel value={value} index={index}>
+      <Grid container spacing={4}>
+        {
+          items.map((item, index) =>
+          {console.log(item.image)
+            return <Grid item sm={3} xs={12} key={index}>
+              <img src={item.image} />
+              <div>{item.name}</div>
+              <div>{item.price}</div>
+            </Grid>}
+          )
+        }
+      </Grid>
+    </TabPanel>
+  )
+}
+
 function SimpleTabs({ categories }) {
   const classes = useStyles();
   const [value, setValue] = React.useState(0);
@@ -65,93 +95,45 @@ function SimpleTabs({ categories }) {
   };
 
   return (
-    <div className={classes.root}>
-      <AppBar position="static">
-        <Tabs value={value} onChange={handleChange} variant="scrollable" scrollButtons="auto" aria-label="simple tabs example">
-          {
-            categories.map((cate, index) => {
-              return <Tab label={cate.name} {...a11yProps(index)} />
-            })
-          }
-        </Tabs>
-      </AppBar>
-      <TabPanel value={value} index={0}>
-        <Grid container spacing={4}>
-          <Grid item sm={3} xs={12}>
-            <div>asdasdasdasdasdasd</div>
-          </Grid>
-          <Grid item sm={3} xs={12}>
-            <div>thong tin mon an</div>
-          </Grid>
-          <Grid item sm={3} xs={12}>
-            <div>thong tin mon an 1</div>
-          </Grid>
-          <Grid item sm={3} xs={12}>
-            <div>thong tin mon an 2</div>
-          </Grid>
-          <Grid item sm={3} xs={12}>
-            <div>thong tin mon an 3</div>
-          </Grid>
-        </Grid>
-      </TabPanel>
-      <TabPanel value={value} index={1}>
-        Item Two
-        </TabPanel>
-      <TabPanel value={value} index={2}>
-        Item Three
-        </TabPanel>
-    </div>
+    <>
+      <div className={classes.root}>
+        <AppBar position="static">
+          <Tabs value={value} onChange={handleChange} variant="scrollable" scrollButtons="auto" aria-label="simple tabs example">
+            {
+              categories.map((cate, index) => {
+                return <Tab label={cate.name} {...a11yProps(index)} />
+              })
+            }
+          </Tabs>
+        </AppBar>
+        {
+          categories.map((cate, index) => {
+            return <CategoryDetail value={value} index={index} category={cate} />
+          })
+        }
+
+      </div>
+    </>
   );
 }
 
 const ListCategory = () => {
   const classes = useStyles();
   const { t: getLabel } = useTranslation();
-  const categories = [
-    {
-      id: "0",
-      name: "Tất cả",
-      total: 2,
-    },
-    {
-      id: "1",
-      name: "Đồ uống",
-      total: 2,
-    },
-    {
-      id: "2",
-      name: "Đồ ăn",
-      total: 3,
-    },
-    {
-      id: "3",
-      name: "Đồ nhậu",
-      total: 2,
-    },
-    {
-      id: "4",
-      name: "Đồ uống",
-      total: 2,
-    },
-  ]
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    fetch("http://localhost:5000/api/category?restaurantId=1")
+      .then(res => res.json())
+      .then(res => {
+        setCategories(res.data)
+      })
+      .catch()
+  }, [])
+
   return (
-    // <Box>
-    //     <Box className={classes.boxHeader}>Category</Box>
-    //     <Box className={classes.boxPara}>
-    //         {
-    //             categoris.map((category,index)=>(
-    //                 <Box key={"cate"+index} className={classes.boxBorder}>
-    //                     <Box className={classes.boxContent}>
-    //                         <Link to={`/{id}/categories/${category.id}`} activeClassName="active" style={{textDecoration: "none", color:"black"}}>
-    //                             <Box style={{fontSize:"18px",fontWeight: "500"}}>{category.name}</Box>
-    //                             <Box>{category.total}</Box>
-    //                         </Link>
-    //                     </Box>
-    //                 </Box>
-    //             ))
-    //         }               
-    //     </Box>
-    // </Box>
+
     <>
       <SimpleTabs categories={categories} />
     </>

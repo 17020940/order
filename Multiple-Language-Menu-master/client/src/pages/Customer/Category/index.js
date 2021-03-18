@@ -1,66 +1,20 @@
-import React, { memo, useState } from "react";
+import React, { memo } from "react";
 import {
   makeStyles,
-  Box,
-  Checkbox,
-  ListItemIcon,
-  ListItem
 } from "@material-ui/core";
 import { CustomerLayout } from "../../../layouts";
-import { useTranslation } from "react-i18next";
-import ButtonBox from "../../../components/buttonBox"
-import StartCategory from "./Components/startCategory"
 import ListCategory from "./Components/listCategory"
 const Category = () => {
-  const classes = useStyles();
-  const { t: getLabel } = useTranslation();
-  const [checked, setChecked] = useState(true)
   return (
     <CustomerLayout>
-      <Box className={classes.boxPara} style={{display: checked?"flex":"none"}}>
-        <Box className={classes.boxBorder}>
-          <Box className={classes.boxHeader}>
-            <Box className={classes.boxContent}>
-              thong Tin
-            </Box>
-            <ListItem
-                className={classes.iconBox}
-                role="listitem"
-                button
-                // onClick={handleToggle(value)}
-              >
-                <ListItemIcon>
-                  <Checkbox
-                    className={classes.checkBox}
-                  />
-                </ListItemIcon>
-                <Box className={classes.boxList}>
-                  <Box className={classes.listText} >
-                    Nội dung trên đã được xác thực
-                  </Box>
-                </Box>
-              </ListItem>
-          </Box>
-          <Box className={classes.boxButton}>
-            <ButtonBox
-                nameButton="bắt đầu sử dụng"
-                // typeButton="submit"
-                onClick={e=>setChecked(false)}
-              />
-          </Box>
-        </Box>       
-      </Box>
-      {/* <StartCategory/> */}
-      <Box style={{display: checked?"none":"block"}}>
-        <ListCategory/>
-      </Box>
+      <ListCategory />
     </CustomerLayout>
   );
 };
 
 const useStyles = makeStyles({
-  boxPara:{
-    width:"100%",
+  boxPara: {
+    width: "100%",
     height: "90vh",
     // display: "flex",
     alignItems: "center",
@@ -85,9 +39,9 @@ const useStyles = makeStyles({
   checkBox: {
     color: "#000000",
   },
-  boxButton:{
+  boxButton: {
     height: "50px",
-    "& .MuiButtonBase-root":{
+    "& .MuiButtonBase-root": {
       borderRadius: "0px"
     }
   }

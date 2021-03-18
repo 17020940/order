@@ -6,8 +6,10 @@ import LabelText from "./Components/labelText";
 import { BoxButton, InputText } from "../../../components";
 import { getJWT } from "../../../utils/tokenUtil";
 import { Redirect } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 
 const Introduce = () => {
+  const history = useHistory();
   const classes = useStyles();
   const { t: getLabel } = useTranslation();
   const onLogin = () => {
@@ -16,13 +18,14 @@ const Introduce = () => {
     //   console.log("token is: ", token)
     // })
     // .catch(e => console.log(e));
-    return (
-      <Redirect
-        to={{
-          pathname: PathConstant.CUSTOMER_CATEGORY,
-        }}
-      />
-    );
+    // return (
+    //   <Redirect
+    //     to={{
+    //       pathname: PathConstant.CUSTOMER_CATEGORY,
+    //     }}
+    //   />
+    // );
+    history.push(PathConstant.CUSTOMER_CATEGORY)
   };
   return (
     <Box className={classes.boxParent}>
