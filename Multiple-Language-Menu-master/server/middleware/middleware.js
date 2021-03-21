@@ -65,6 +65,37 @@ exports.verifyTokenRestaurant = (req, res, next) => {
   });
 };
 
+exports.verifyOrderToken = (req, res, next) => {
+  let token = req.headers["accesstoken"];
+  if (!token) {
+    return res.status(401).send({
+      success: false,
+      error: "Unauthorized: No token provided.",
+    });
+  }
+
+  jwt.verify(token, config.secretKey, (error, decoded) => {
+    if (error) {
+      return res.status(401).send({
+        success: false,
+        error: "Fail to Authentication. Error -> " + error,
+      });
+    }
+
+    if(decoded.exp < new Date().getTime()){
+      return res.status(401).send({
+        success: false,
+        error: "Token is expired",
+      });
+    }
+    console.log(decoded)
+    next();
+    
+  });
+};
+
+
+
 exports.checkPasswordEdit = (req, res, next) => {
   newPassword = "" + req.body.new_password;
   confirmPassword = "" + req.body.confirm_password;

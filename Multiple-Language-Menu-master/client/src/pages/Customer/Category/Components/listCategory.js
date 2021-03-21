@@ -58,7 +58,7 @@ function getToken() {
 
 function CategoryDetail({ category, value, index }) {
   const [items, setItems] = useState([]);
-
+  const classes = useStyles();
   useEffect(() => {
     fetch("http://localhost:5000/api/item?categoryId=" + category.id)
       .then(res => res.json())
@@ -72,14 +72,13 @@ function CategoryDetail({ category, value, index }) {
     <TabPanel value={value} index={index}>
       <Grid container spacing={4}>
         {
-          items.map((item, index) =>
-          {console.log(item.image)
-            return <Grid item sm={3} xs={12} key={index}>
-              <img src={item.image} />
-              <div>{item.name}</div>
-              <div>{item.price}</div>
-            </Grid>}
-          )
+          items.map((item, index) => {
+            return <Grid item sm={3} xs={12} key={index} className={classes.boxItem}>
+              <img src={item.image} width="100%" height="200" />
+              <p >{item.name}</p>
+              <p>{item.price}</p>
+            </Grid>
+          })
         }
       </Grid>
     </TabPanel>
@@ -166,7 +165,6 @@ const useStyles = makeStyles({
 
   root: {
     flexGrow: 1,
-    backgroundColor: "green",
   },
   // boxButton:{
   //     width: "100%",
@@ -174,6 +172,10 @@ const useStyles = makeStyles({
   //     position: "absolute",
   //     top: "0"
   // }
+  boxItem: {
+    color: 'black',
+    // boxShadow: "0 5px 5px 0 rgba(0,0,0,.2), 0 6px 18px 0 rgba(0,0,0,.19)",
+  },
 });
 
 export default memo(ListCategory);

@@ -45,6 +45,7 @@ db.working_shift = require("./working_shift.model")(sequelize, Sequelize);
 db.sort_language = require("./sort_language.model")(sequelize, Sequelize);
 db.customer = require("./customer.model")(sequelize, Sequelize);
 db.title_language = require("./title_language.model")(sequelize, Sequelize);
+db.table = require("./table.model")(sequelize, Sequelize);
 
 // Join restaurant with owner
 db.restaurant.hasOne(db.owner);
@@ -89,8 +90,8 @@ db.item_language.belongsTo(db.category_language);
 db.item.hasMany(db.item_language);
 db.item_language.belongsTo(db.item);
 // Join item with order
-db.item.hasMany(db.order);
-db.order.belongsTo(db.item);
+// db.item.hasMany(db.order);
+// db.order.belongsTo(db.item);
 // Join language with restaurant information
 db.language.hasMany(db.restaurant_information);
 db.restaurant_information.belongsTo(db.language);

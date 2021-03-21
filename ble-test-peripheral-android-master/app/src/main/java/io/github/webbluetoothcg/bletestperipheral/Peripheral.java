@@ -151,7 +151,7 @@ public class Peripheral extends Activity implements ServiceFragmentDelegate {
       }
       String jwt="";
       try {
-        TokenUtil tokenUtil = new TokenUtil("test19021999a@asdas");
+        TokenUtil tokenUtil = new TokenUtil("hoi-lam-cai-gi-1999");
         jwt = tokenUtil.generateJWT();
       } catch (Exception e) {
         e.printStackTrace();

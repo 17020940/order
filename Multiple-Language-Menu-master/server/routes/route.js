@@ -193,6 +193,17 @@ module.exports = (app) => {
     categoryCustomer.getItem
   ); 
 
+  app.get(
+    "/api/table",
+    categoryCustomer.getTable
+  ); 
+
+  app.post(
+    "/api/order-session",
+    [middleware.verifyOrderToken],
+    categoryCustomer.createOrderSession
+  ); 
+
   const LanguageSchedule = require("../schedule/language.schedule");
 
   const StateInterval = () => {
