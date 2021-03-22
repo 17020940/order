@@ -55,7 +55,7 @@ const Introduce = () => {
     <Box className={classes.boxParent}>
       <Box className={classes.box1}>
 
-        <Box className={classes.box3} style={{ display: !restaurantId ? "flex" : "none" }}>
+        <Box className={classes.box3} style={{ display: !restaurantId ? "block" : "none" }}>
           <span>
             Ứng dụng cần được kết nối bluetooth trước khi sử dụng
           </span>
@@ -136,7 +136,7 @@ const useStyles = makeStyles({
     height: 430,
     backgroundColor: "#fff",
     borderRadius: 50,
-    boxShadow: "0 5px 5px 0 rgba(0,0,0,.2), 0 6px 18px 0 rgba(0,0,0,.19)",
+    boxShadow: "0 0 10px 0px grey",
   },
   box2: {
     backgroundColor: "#305C8B",

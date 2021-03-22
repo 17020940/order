@@ -14,6 +14,7 @@ import PropTypes from 'prop-types';
 import { useTranslation } from "react-i18next";
 import ButtonBox from "../../../../components/buttonBox";
 import { getJWT } from "../../../../utils/tokenUtil";
+import { orange } from "@material-ui/core/colors";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -70,13 +71,15 @@ function CategoryDetail({ category, value, index }) {
 
   return (
     <TabPanel value={value} index={index}>
-      <Grid container spacing={4}>
+      <Grid container spacing={4} style={{ gridGap: '20px' }}>
         {
           items.map((item, index) => {
-            return <Grid item sm={3} xs={12} key={index} className={classes.boxItem}>
-              <img src={item.image} width="100%" height="200" />
-              <p >{item.name}</p>
-              <p>{item.price}</p>
+            return <Grid item sm={3} xs={12} key={index} >
+              <img src={item.image} width="100%" height="200" className={classes.boxItem} />
+              <center>
+                <p style={{ color: 'black' }}>{item.name}</p>
+                <p style={{ color: 'gray', fontSize: '13px' }}>{item.price}</p>
+              </center>
             </Grid>
           })
         }
@@ -96,8 +99,9 @@ function SimpleTabs({ categories }) {
   return (
     <>
       <div className={classes.root}>
-        <AppBar position="static">
-          <Tabs value={value} onChange={handleChange} variant="scrollable" scrollButtons="auto" aria-label="simple tabs example">
+        <AppBar position="static" style={{ boxShadow: 'none' }}>
+          <Tabs value={value} onChange={handleChange} variant="scrollable" indicatorColor="secondary"
+            textColor="secondary" scrollButtons="auto" aria-label="simple tabs example" >
             {
               categories.map((cate, index) => {
                 return <Tab label={cate.name} {...a11yProps(index)} />
@@ -173,9 +177,10 @@ const useStyles = makeStyles({
   //     top: "0"
   // }
   boxItem: {
-    color: 'black',
-    // boxShadow: "0 5px 5px 0 rgba(0,0,0,.2), 0 6px 18px 0 rgba(0,0,0,.19)",
+    // boxShadow: "0 0 10px 0px grey",
+    borderRadius: "25px"
   },
+
 });
 
 export default memo(ListCategory);

@@ -85,7 +85,8 @@ exports.getItem = async (req, res) => {
         let imageFoler = "C:/Users/DUC_NHA/Pictures/datn/";
         let data = await Promise.all(
             items.map(async item => {
-                const data = await imageToBase64(imageFoler + item.dataValues.image_item)
+                // const data = await imageToBase64(imageFoler + item.dataValues.image_item)
+                const data = await imageToBase64("C:/Users/Administrator/Pictures/datn/ca-hoi.jpg")
                 item.dataValues.image = "data:image/jpeg;base64," + data;
                 return item;
             })
