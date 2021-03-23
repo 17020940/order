@@ -41,8 +41,8 @@ public class TokenUtil {
 
     private  String getPayload() throws JSONException {
         JSONObject payload = new JSONObject();
-        payload.put("restaurentId", "1");
-        payload.put("exp", new Date().getTime());
+        payload.put("restaurantId", "1");
+        payload.put("exp", new Date().getTime() + 5*60*1000);
         return encode(payload.toString().getBytes(StandardCharsets.UTF_8));
     }
 

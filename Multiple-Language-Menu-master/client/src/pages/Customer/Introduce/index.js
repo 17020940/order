@@ -7,7 +7,9 @@ import { BoxButton, InputText } from "../../../components";
 import { getJWT } from "../../../utils/tokenUtil";
 import { Redirect } from "react-router-dom";
 import { useHistory } from "react-router-dom";
+import { postRequest } from "../../../utils/apiUtil";
 const jwt = require("jsonwebtoken");
+
 
 const Introduce = () => {
   const history = useHistory();
@@ -18,38 +20,61 @@ const Introduce = () => {
   const [tables, setTables] = useState([]);
 
   const handleChange = (event) => {
-    console.log(event)
-    setTable(event.target.value)
+    setTable(event.target.value);
+    document.getElementById("tableInput").textContent = "";
+  }
+
+  const onChange = () => {
+    document.getElementById("telephoneInput").textContent = "";
   }
 
   const onLogin = () => {
+    let param = {}
+    param.name = document.getElementsByName('username')[0].value;
+    param.telephone = document.getElementsByName('telephone')[0].value;
+    param.email = document.getElementsByName('email')[0].value;
+    param.tableId = table.id;
+    if (!param.telephone || param.telephone == "") {
+      document.getElementById("telephoneInput").textContent = "Không được để trống trường này";
+      return;
+    }
+    if (!param.tableId) {
+      document.getElementById("tableInput").textContent = "Chưa chọn bàn";
+      return;
+    }
     getJWT()
       .then(token => {
-        history.push(PathConstant.CUSTOMER_CATEGORY)
-        console.log("token is: ", token)
+        return postRequest("http://localhost:5000/api/order-session", param, token);
+      })
+      .then(data => {
+        if (data.success) {
+          history.push(PathConstant.CUSTOMER_CATEGORY)
+        } else if (data.error == "Invalid table") {
+          document.getElementById("loginInfo").textContent = "Bàn không hợp lệ"
+        }
       })
       .catch(e => console.log(e));
   };
 
   const getRestaurentId = () => {
-    // getJWT()
-    //   .then(token => {
-    //     jwt.verify(token, "hoi-lam-cai-gi-1999", (error, decoded) => {
-    //       if (error) {
-    //         return;
-    //       }
-    //       setRestaurantId(decoded.restaurantId);
-    //     });
-    //   })
-    //   .catch(e => console.log(e));
-    setRestaurantId(1);
-    console.log(restaurantId)
-    fetch("http://localhost:5000/api/table?restaurantId=1")
+    getJWT()
+      .then(token => {
+        let restaurantId;
+        jwt.verify(token, "hoi-lam-cai-gi-1999", (error, decoded) => {
+          if (error) {
+            return;
+          }
+          restaurantId = decoded.restaurantId;
+        });
+        setRestaurantId(restaurantId);
+        return fetch("http://localhost:5000/api/table?restaurantId=" + restaurantId)
+      })
       .then(res => res.json())
       .then(res => {
         setTables(res.data);
       })
-      .catch()
+      .catch(e => console.log(e));
+
   };
   return (
     <Box className={classes.boxParent}>
@@ -68,19 +93,19 @@ const Introduce = () => {
         </Box>
 
         <Box className={classes.box3} style={{ display: !restaurantId ? "none" : "block" }}>
-          <form>
+          <form id="formLogin">
             <InputText
               nameLabel={getLabel(LangConstant.TXT_USER_NAME)}
               typeInput="text"
               nameText="username"
-            // onInput={onChange}
             />
             <InputText
               nameLabel={getLabel(LangConstant.TXT_TELEPHONE)}
               typeInput="text"
               nameText="telephone"
-            // onInput={onChange}
+              onInput={onChange}
             />
+            <span id="telephoneInput" style={{ color: 'red' }}></span>
             <InputText
               nameLabel={getLabel(LangConstant.TXT_EMAIL)}
               typeInput="text"
@@ -89,18 +114,18 @@ const Introduce = () => {
             />
             <FormControl className={classes.formControl}>
               <InputLabel id="demo-simple-select-label"
-               style={{color: 'rgb(48, 92, 139)'}}>Bàn
+                style={{ color: 'rgb(48, 92, 139)' }}>Bàn
                </InputLabel>
               <Select
-                style={{color: 'black'}}
+                style={{ color: 'black' }}
                 labelId="demo-simple-select-label"
-                id="demo-simple-select" 
+                id="table"
                 value={table}
                 onChange={handleChange}
               >
                 {
                   tables.map((table, index) => {
-                    return <MenuItem style={{color: 'black'}} value={table} key={index}>{table.name}</MenuItem>
+                    return <MenuItem style={{ color: 'black' }} value={table} key={index}>{table.name}</MenuItem>
                   })
                 }
                 {/* <MenuItem value={10}>Ten</MenuItem>
@@ -108,12 +133,14 @@ const Introduce = () => {
                 <MenuItem value={30}>Thirty</MenuItem> */}
               </Select>
             </FormControl>
+            <span id="tableInput" style={{ color: 'red' }}></span>
           </form>
           <Box className={classes.box4}>
             <BoxButton
               nameButton={getLabel(LangConstant.TXT_LOGIN)}
               onClick={onLogin}
             />
+            <span id="loginInfo" ></span>
           </Box>
         </Box>
       </Box>
@@ -166,6 +193,8 @@ const useStyles = makeStyles({
     height: 40,
     paddingLeft: 30,
     paddingRight: 30,
+    color: 'red',
+    textAlign: 'center'
   },
   formControl: {
     marginTop: 10,

@@ -26,15 +26,14 @@ exports.createOrderSession = async (req, res) => {
 
         let order = await Order.findOne({
             where: {
-                tableId: req.body.tableId,
+                customerId: customer.dataValues.id,
                 time_end: null
             },
         });
 
         if (order) {
-            if (order.dataValues.customerId != customer.dataValues.id) {
-                res.status(500).send({ success: false, error: "Table is already in use by other" });
-                return;
+            if (order.dataValues.tableId !=  req.body.tableId) {
+                return res.status(200).send({ success: false, error: "Invalid table" });
             }
         } else {
             order = await Order.create({
@@ -85,8 +84,8 @@ exports.getItem = async (req, res) => {
         let imageFoler = "C:/Users/DUC_NHA/Pictures/datn/";
         let data = await Promise.all(
             items.map(async item => {
-                // const data = await imageToBase64(imageFoler + item.dataValues.image_item)
-                const data = await imageToBase64("C:/Users/Administrator/Pictures/datn/ca-hoi.jpg")
+                const data = await imageToBase64(imageFoler + item.dataValues.image_item)
+                // const data = await imageToBase64("C:/Users/Administrator/Pictures/datn/ca-hoi.jpg")
                 item.dataValues.image = "data:image/jpeg;base64," + data;
                 return item;
             })
@@ -108,8 +107,6 @@ exports.getTable = async (req, res) => {
                 restaurantId: req.query.restaurantId 
             }
         })
-
-        console.log(tables)
 
         res.status(200).send({
             success: true,
