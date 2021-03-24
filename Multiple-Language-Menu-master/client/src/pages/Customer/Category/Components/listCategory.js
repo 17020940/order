@@ -3,17 +3,25 @@ import { Link } from "react-router-dom"
 import {
   makeStyles,
   Box,
-  Button,
+  Dialog,
   Tabs,
   Tab,
   AppBar,
   Typography,
-  Grid
+  Grid,
+  DialogActions,
+  Button,
+  DialogContent,
+  TextField
 } from "@material-ui/core";
+import AddIcon from '@material-ui/icons/Add';
+import RemoveIcon from '@material-ui/icons/Remove';
 import PropTypes from 'prop-types';
 import { useTranslation } from "react-i18next";
 import ButtonBox from "../../../../components/buttonBox";
+import { InputText } from "../../../../components";
 import { getJWT } from "../../../../utils/tokenUtil";
+import { LangConstant } from "../../../../const";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -58,7 +66,18 @@ function getToken() {
 
 function CategoryDetail({ category, value, index }) {
   const [items, setItems] = useState([]);
+  const [isOpen, setIsOpen] = useState(false);
+  const [item, setItem] = useState({});
   const classes = useStyles();
+
+  const onClickItem = (indexItem) => {
+    setItem(items[indexItem]);
+    setIsOpen(true)
+  }
+
+  const handleClose = () => {
+    setIsOpen(false)
+  }
   useEffect(() => {
     fetch("http://localhost:5000/api/item?categoryId=" + category.id)
       .then(res => res.json())
@@ -74,7 +93,8 @@ function CategoryDetail({ category, value, index }) {
         {
           items.map((item, index) => {
             return <Grid item sm={3} xs={12} key={index} >
-              <img src={item.image} width="100%" height="200" className={classes.boxItem} />
+              <img src={item.image} width="100%" height="200"
+                className={classes.boxItem} onClick={() => onClickItem(index)} />
               <center>
                 <p style={{ color: 'black' }}>{item.name}</p>
                 <p style={{ color: 'gray', fontSize: '13px' }}>{item.price}</p>
@@ -83,7 +103,32 @@ function CategoryDetail({ category, value, index }) {
           })
         }
       </Grid>
+      <Dialog open={isOpen} >
+        <DialogContent>
+          <Box style={{ color: 'black' }}>
+            {item.name}
+          </Box>
+          <AddIcon style={{ color: 'black', cursor: "pointer" }} />
+          <InputText
+            typeInput="number"
+            id="quantity"
+          />
+          <RemoveIcon style={{ color: 'black', cursor: "pointer" }} />
+        </DialogContent>
+        <DialogActions>
+          <DialogActions>
+            <Button onClick={handleClose} color="primary">
+              Subscribe
+          </Button>
+            <Button onClick={handleClose} color="primary">
+              Cancel
+          </Button>
+          </DialogActions>
+        </DialogActions>
+      </Dialog>
     </TabPanel>
+
+
   )
 }
 
@@ -177,7 +222,8 @@ const useStyles = makeStyles({
   // }
   boxItem: {
     // boxShadow: "0 0 10px 0px grey",
-    borderRadius: "25px"
+    borderRadius: "25px",
+    cursor: "pointer"
   },
 
 });
