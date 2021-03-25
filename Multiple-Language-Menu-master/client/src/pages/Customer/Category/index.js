@@ -4,10 +4,12 @@ import {
 } from "@material-ui/core";
 import { CustomerLayout } from "../../../layouts";
 import ListCategory from "./Components/listCategory"
-const Category = () => {
+const Category = (props) => {
+
+  console.log(props)
   return (
     <CustomerLayout>
-      <ListCategory />
+      <ListCategory data={props} />
     </CustomerLayout>
   );
 };

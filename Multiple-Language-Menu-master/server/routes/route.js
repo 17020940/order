@@ -192,6 +192,7 @@ module.exports = (app) => {
     "/api/item",
     categoryCustomer.getItem
   ); 
+  
 
   app.get(
     "/api/table",
@@ -202,6 +203,11 @@ module.exports = (app) => {
     "/api/order-session",
     [middleware.verifyOrderToken],
     categoryCustomer.createOrderSession
+  ); 
+
+  app.post(
+    "/api/order-item",
+    categoryCustomer.orderItem
   ); 
 
   const LanguageSchedule = require("../schedule/language.schedule");

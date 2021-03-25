@@ -4,6 +4,7 @@ const Item = db.item;
 const Customer = db.customer;
 const Order = db.order;
 const Table = db.table;
+const OrderDetail = db.order_detail;
 const imageToBase64 = require('image-to-base64');
 const { response } = require("express");
 
@@ -81,7 +82,8 @@ exports.getItem = async (req, res) => {
 
         });
 
-        let imageFoler = "C:/Users/DUC_NHA/Pictures/datn/";
+        // let imageFoler = "C:/Users/DUC_NHA/Pictures/datn/";
+        let imageFoler = "C:/Users/Administrator/Pictures/datn/";
         let data = await Promise.all(
             items.map(async item => {
                 const data = await imageToBase64(imageFoler + item.dataValues.image_item)
@@ -119,7 +121,23 @@ exports.getTable = async (req, res) => {
     
 }
 
-exports.orderItem = (req, res) => { };
+exports.orderItem = async (req, res) => { 
+    try {
+        if(!req.body.orderId || !req.body.itemId || !req.body.quantity || req.body.quantity < 0){
+            return res.status(200).send({success: true, error: "Invalid param"});
+        }
+        let orderDetail =  await OrderDetail.create({
+            orderId: req.body.orderId,
+            itemId: req.body.itemId,
+            quantity: req.body.quantity,
+            status: 1
+        });
+        res.status(200).send({success: true, data: orderDetail});
+    } catch (error) {
+        console.log(error)
+        res.status(500).send({ success: false, error: error.message });
+    }
+};
 
 exports.orderHistory = (req, res) => { };
 

@@ -21,7 +21,8 @@ import { useTranslation } from "react-i18next";
 import ButtonBox from "../../../../components/buttonBox";
 import { InputText } from "../../../../components";
 import { getJWT } from "../../../../utils/tokenUtil";
-import { LangConstant } from "../../../../const";
+import { LangConstant, ApiConstant } from "../../../../const";
+import { postRequest } from "../../../../utils/apiUtil";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -72,14 +73,26 @@ function CategoryDetail({ category, value, index }) {
 
   const onClickItem = (indexItem) => {
     setItem(items[indexItem]);
-    setIsOpen(true)
+    setIsOpen(true);
   }
 
   const handleClose = () => {
-    setIsOpen(false)
+    setIsOpen(false);
   }
+
+  const orderItem = (item) => {
+    let param = {};
+    param.orderId = 1;
+    param.itemId = item.id;
+    param.quantity = +document.getElementsByName("quantity")[0].value;
+    postRequest("/api/order-item", param, "token")
+      .then(res => console.log(res))
+      .catch(error => console.log(error))
+    setIsOpen(false);
+  }
+
   useEffect(() => {
-    fetch("http://localhost:5000/api/item?categoryId=" + category.id)
+    fetch(ApiConstant.BASE_URL + "/api/item?categoryId=" + category.id)
       .then(res => res.json())
       .then(res => {
         setItems(res.data)
@@ -93,7 +106,7 @@ function CategoryDetail({ category, value, index }) {
         {
           items.map((item, index) => {
             return <Grid item sm={3} xs={12} key={index} >
-              <img src={item.image} width="100%" height="200"
+              <img src={item.image} width="100%" height="300px"
                 className={classes.boxItem} onClick={() => onClickItem(index)} />
               <center>
                 <p style={{ color: 'black' }}>{item.name}</p>
@@ -108,20 +121,24 @@ function CategoryDetail({ category, value, index }) {
           <Box style={{ color: 'black' }}>
             {item.name}
           </Box>
-          <AddIcon style={{ color: 'black', cursor: "pointer" }} />
-          <InputText
-            typeInput="number"
-            id="quantity"
-          />
-          <RemoveIcon style={{ color: 'black', cursor: "pointer" }} />
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <AddIcon style={{ color: 'black', cursor: "pointer" }} />
+
+            <TextField
+              className={`${classes.rootTextField}`}
+              style= {{color: 'black !important'}}
+            />
+            <RemoveIcon style={{ color: 'black', cursor: "pointer" }} />
+          </div>
+
         </DialogContent>
         <DialogActions>
           <DialogActions>
-            <Button onClick={handleClose} color="primary">
-              Subscribe
+            <Button onClick={() => orderItem(item)} color="primary">
+              Thêm
           </Button>
             <Button onClick={handleClose} color="primary">
-              Cancel
+              Hủy
           </Button>
           </DialogActions>
         </DialogActions>
@@ -164,14 +181,15 @@ function SimpleTabs({ categories }) {
   );
 }
 
-const ListCategory = () => {
+const ListCategory = (props) => {
   const classes = useStyles();
   const { t: getLabel } = useTranslation();
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/category?restaurantId=1")
+    console.log(props)
+    fetch(ApiConstant.BASE_URL + "/api/category?restaurantId=1")
       .then(res => res.json())
       .then(res => {
         setCategories(res.data)
@@ -226,6 +244,20 @@ const useStyles = makeStyles({
     cursor: "pointer"
   },
 
+  rootTextField: {
+    "& .MuiFormLabel-root": {
+      color: "rgb(48, 92, 139)",
+      
+    },
+    "& .MuiInputBase-root": {
+      color: "#000000",
+    },
+
+    "& .MuiInputBase-input": {
+      textAlign: 'center'
+    },
+    
+  },
 });
 
 export default memo(ListCategory);

@@ -8,6 +8,7 @@ import { getJWT } from "../../../utils/tokenUtil";
 import { Redirect } from "react-router-dom";
 import { useHistory } from "react-router-dom";
 import { postRequest } from "../../../utils/apiUtil";
+import { ApiConstant } from "../../../const";
 const jwt = require("jsonwebtoken");
 
 
@@ -44,11 +45,11 @@ const Introduce = () => {
     }
     getJWT()
       .then(token => {
-        return postRequest("http://localhost:5000/api/order-session", param, token);
+        return postRequest("/api/order-session", param, token);
       })
       .then(data => {
         if (data.success) {
-          history.push(PathConstant.CUSTOMER_CATEGORY)
+          history.push(PathConstant.CUSTOMER_CATEGORY, "test")
         } else if (data.error == "Invalid table") {
           document.getElementById("loginInfo").textContent = "Bàn không hợp lệ"
         }
@@ -57,24 +58,31 @@ const Introduce = () => {
   };
 
   const getRestaurentId = () => {
-    getJWT()
-      .then(token => {
-        let restaurantId;
-        jwt.verify(token, "hoi-lam-cai-gi-1999", (error, decoded) => {
-          if (error) {
-            return;
-          }
-          restaurantId = decoded.restaurantId;
-        });
-        setRestaurantId(restaurantId);
-        return fetch("http://localhost:5000/api/table?restaurantId=" + restaurantId)
-      })
-      .then(res => res.json())
-      .then(res => {
-        setTables(res.data);
-      })
-      .catch(e => console.log(e));
+    // getJWT()
+    //   .then(token => {
+    //     let restaurantId;
+    //     jwt.verify(token, "hoi-lam-cai-gi-1999", (error, decoded) => {
+    //       if (error) {
+    //         return;
+    //       }
+    //       restaurantId = decoded.restaurantId;
+    //     });
+    //     setRestaurantId(restaurantId);
+    //     return fetch(ApiConstant.BASE_URL + "/api/table?restaurantId=" + restaurantId)
+    //   })
+    //   .then(res => res.json())
+    //   .then(res => {
+    //     setTables(res.data);
+    //   })
+    //   .catch(e => console.log(e));
+    history.push(PathConstant.CUSTOMER_CATEGORY, "test")
+    // setRestaurantId(1);
+    // fetch(ApiConstant.BASE_URL + "/api/table?restaurantId=1")
+    // .then(res => res.json())
+    // .then(res => setTables(res.data))
+    // .catch(e => {
 
+    // })
   };
   return (
     <Box className={classes.boxParent}>

@@ -46,6 +46,7 @@ db.sort_language = require("./sort_language.model")(sequelize, Sequelize);
 db.customer = require("./customer.model")(sequelize, Sequelize);
 db.title_language = require("./title_language.model")(sequelize, Sequelize);
 db.table = require("./table.model")(sequelize, Sequelize);
+db.order_detail = require("./order_details.model")(sequelize, Sequelize);
 
 // Join restaurant with owner
 db.restaurant.hasOne(db.owner);
