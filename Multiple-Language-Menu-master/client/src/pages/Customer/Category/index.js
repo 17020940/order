@@ -5,11 +5,10 @@ import {
 import { CustomerLayout } from "../../../layouts";
 import ListCategory from "./Components/listCategory"
 const Category = (props) => {
-
-  console.log(props)
+  // console.log(props)
   return (
-    <CustomerLayout>
-      <ListCategory data={props} />
+    <CustomerLayout props={props.location.state}>
+      <ListCategory data={props.location.state} />
     </CustomerLayout>
   );
 };

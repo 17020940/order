@@ -25,7 +25,12 @@ import {
 import { LangConstant, PathConstant } from "../../const";
 import { useTranslation } from "react-i18next";
 
-const CustomerLayout = ({ children }) => {
+import { useHistory } from "react-router-dom";
+
+const CustomerLayout = ({children, props}) => {
+
+  const history = useHistory();
+
   const classes = useStyles();
   const { t: getLabel } = useTranslation();
 
@@ -38,6 +43,10 @@ const CustomerLayout = ({ children }) => {
   const onDrawerClose = () => {
     setOpen(false);
   };
+
+  const orderDetail = () => {
+    history.push(PathConstant.CUSTOMER_PAY, props);
+  }
 
   const listSidebar = [
     {
@@ -89,12 +98,10 @@ const CustomerLayout = ({ children }) => {
           </Typography>
           <IconButton 
             className={`${classes.orderButton} ${classes.boxChange}`}
+            onClick={orderDetail}
             // disableRipple
-          >
-            <Link to={`/{id}/pay`} activeClassName="active" style={{textDecoration: "none",color:"white"}}>
-              <Restaurant />
+          >              <Restaurant />
               <Box className={classes.boxPosition}>1</Box>
-            </Link>            
           </IconButton>
         </Toolbar>
       </AppBar>

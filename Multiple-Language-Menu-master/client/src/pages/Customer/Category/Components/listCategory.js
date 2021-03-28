@@ -18,10 +18,8 @@ import AddIcon from '@material-ui/icons/Add';
 import RemoveIcon from '@material-ui/icons/Remove';
 import PropTypes from 'prop-types';
 import { useTranslation } from "react-i18next";
-import ButtonBox from "../../../../components/buttonBox";
-import { InputText } from "../../../../components";
-import { getJWT } from "../../../../utils/tokenUtil";
-import { LangConstant, ApiConstant } from "../../../../const";
+import { TokenUtil } from "../../../../utils/tokenUtil";
+import { ApiConstant } from "../../../../const";
 import { postRequest } from "../../../../utils/apiUtil";
 
 function TabPanel(props) {
@@ -57,15 +55,8 @@ function a11yProps(index) {
   };
 }
 
-function getToken() {
-  getJWT()
-    .then(token => {
-      console.log("token is: ", token)
-    })
-    .catch(e => console.log(e));
-}
 
-function CategoryDetail({ category, value, index }) {
+function CategoryDetail({ category, value, index, orderId }) {
   const [items, setItems] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [item, setItem] = useState({});
@@ -80,15 +71,20 @@ function CategoryDetail({ category, value, index }) {
     setIsOpen(false);
   }
 
-  const orderItem = (item) => {
-    let param = {};
-    param.orderId = 1;
-    param.itemId = item.id;
-    param.quantity = +document.getElementsByName("quantity")[0].value;
-    postRequest("/api/order-item", param, "token")
-      .then(res => console.log(res))
-      .catch(error => console.log(error))
+  const orderItem = async (item) => {
+    try {
+      let token = await TokenUtil.getToken();
+      let param = {};
+      param.orderId = orderId;
+      param.itemId = item.id;
+      param.quantity = +document.getElementsByName("quantity")[0].value;
+      postRequest("/api/order-item", param, token);
+
+    } catch (error) {
+      console.log(error)
+    }
     setIsOpen(false);
+
   }
 
   useEffect(() => {
@@ -106,7 +102,7 @@ function CategoryDetail({ category, value, index }) {
         {
           items.map((item, index) => {
             return <Grid item sm={3} xs={12} key={index} >
-              <img src={item.image} width="100%" height="300px"
+              <img src={item.image} width="100%" height="200px"
                 className={classes.boxItem} onClick={() => onClickItem(index)} />
               <center>
                 <p style={{ color: 'black' }}>{item.name}</p>
@@ -126,7 +122,9 @@ function CategoryDetail({ category, value, index }) {
 
             <TextField
               className={`${classes.rootTextField}`}
-              style= {{color: 'black !important'}}
+              style={{ color: 'black !important' }}
+              type="number"
+              name="quantity"
             />
             <RemoveIcon style={{ color: 'black', cursor: "pointer" }} />
           </div>
@@ -149,14 +147,13 @@ function CategoryDetail({ category, value, index }) {
   )
 }
 
-function SimpleTabs({ categories }) {
+function SimpleTabs({ categories, orderId }) {
   const classes = useStyles();
   const [value, setValue] = React.useState(0);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
-
   return (
     <>
       <div className={classes.root}>
@@ -172,7 +169,8 @@ function SimpleTabs({ categories }) {
         </AppBar>
         {
           categories.map((cate, index) => {
-            return <CategoryDetail value={value} index={index} category={cate} />
+            return <CategoryDetail value={value} index={index}
+              category={cate} orderId={orderId} />
           })
         }
 
@@ -186,9 +184,7 @@ const ListCategory = (props) => {
   const { t: getLabel } = useTranslation();
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
-
   useEffect(() => {
-    console.log(props)
     fetch(ApiConstant.BASE_URL + "/api/category?restaurantId=1")
       .then(res => res.json())
       .then(res => {
@@ -200,7 +196,7 @@ const ListCategory = (props) => {
   return (
 
     <>
-      <SimpleTabs categories={categories} />
+      <SimpleTabs categories={categories} orderId={props.data.orderId} getJWTPromise={props.data.gattServer} />
     </>
   );
 };
@@ -247,7 +243,7 @@ const useStyles = makeStyles({
   rootTextField: {
     "& .MuiFormLabel-root": {
       color: "rgb(48, 92, 139)",
-      
+
     },
     "& .MuiInputBase-root": {
       color: "#000000",
@@ -256,7 +252,7 @@ const useStyles = makeStyles({
     "& .MuiInputBase-input": {
       textAlign: 'center'
     },
-    
+
   },
 });
 

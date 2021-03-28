@@ -1,40 +1,58 @@
-import React, { memo, useState } from "react";
+import React, { memo, useState, useEffect } from "react";
 // import { LangConstant } from "../../../../const";
-import { Button, makeStyles, IconButton, Box } from "@material-ui/core";
+import {
+    Button, makeStyles, Dialog, Box, DialogActions,
+    DialogContent,
+    TextField
+} from "@material-ui/core";
 import { useTranslation } from "react-i18next";
-import { AddCircle, RemoveCircle, Clear } from "@material-ui/icons";
+import { putRequest } from "../../../utils/apiUtil";
 import ButtonBox from "../../../components/buttonBox";
 import { CustomerLayout } from "../../../layouts";
-const PayItems = () => {
-  const classes = useStyles();
-  const [open, setOpen] = useState(false);
-  const { t: getLabel } = useTranslation();
-  const [listItems, setChangeListItems] = useState(data);
-  let totalItems = 0;
-  let totalPrice = 0;
-  listItems.forEach((element) => {
-    totalItems += element.total;
-    totalPrice += element.price * element.total;
-  });
-  const addQuantity = (index) => {
-    let newList = [...listItems];
-    if (newList[index].total < 99) {
-      newList[index].total += 1;
-      setChangeListItems(newList);
+import { ApiConstant } from "../../../const";
+import AddIcon from '@material-ui/icons/Add';
+import RemoveIcon from '@material-ui/icons/Remove';
+import { TokenUtil } from "../../../utils/tokenUtil";
+
+const PayItems = (props) => {
+    const classes = useStyles();
+    const [items, setItems] = useState([]);
+    const [isOpen, setIsOpen] = useState(false);
+    const [item, setItem] = useState({});
+
+    useEffect(() => {
+        getOrderDetail();
+    }, [])
+
+    const getOrderDetail = () => {
+        let orderId = props.location.state.orderId;
+        fetch(ApiConstant.BASE_URL + "/api/order-detail?orderId=" + orderId)
+        .then(res => res.json())
+        .then(res => {
+            setItems(res.data);
+        })
+        .catch(error => console.log(error))
     }
-  };
-  const removeQuantity = (index) => {
-    let newList = [...listItems];
-    if (newList[index].total > 1) {
-      newList[index].total -= 1;
-      setChangeListItems(newList);
+
+    const editOrder = async (index) => {
+        await setIsOpen(true);
+        await setItem(items[index]);
+        document.getElementsByName("quantity")[0].value = items[index].quantity;
     }
-  };
-  const removeItem = (index) => {
-    let newList = [...listItems];
-    newList.splice(index, 1);
-    setChangeListItems(newList);
-  };
+
+    const handleClose = () => {
+        setIsOpen(false);
+    }
+
+    const updateItem = async (index) => {
+        let token = await TokenUtil.getToken();
+        let newItem = { ...item };
+        newItem.quantity = +document.getElementsByName("quantity")[0].value;
+        let response = await putRequest("/api/order-item", newItem, token);
+        setIsOpen(false);
+        getOrderDetail();
+    }
+
     return (
         <CustomerLayout>
             <Box className={classes.boxBorder}>
@@ -42,80 +60,86 @@ const PayItems = () => {
                     <Box>Pay Pay</Box>
                 </Box>
                 <Box className={classes.boxBody}>
-                    {listItems.map((data, index) => (
-                    <Box className={classes.boxContent} key={"b" + index}>
-                        {/* <Box className={classes.boxRemoveItem}>
-                        <Box style={{ lineHeight: "25px", paddingLeft: "10px" }}>
-                            {element.id}
+                    {items.map((item, index) => (
+                        <Box className={classes.boxContent} key={index} onClick={() => editOrder(index)}>
+                            <Box className={classes.boxItem}>
+                                Tên món ăn:
+                            </Box>
+
+                            <Box className={classes.boxItem}>
+                                {item.name}
+                            </Box>
+
+                            <Box className={classes.boxItem}>
+                                Thời gian order:
+                            </Box>
+
+                            <Box className={classes.boxItem}>
+                                {new Date(item.createdAt).toLocaleString()}
+                            </Box>
+
+                            <Box className={classes.boxItem}>
+                                Số lượng:
+                            </Box>
+                            <Box className={classes.boxItem}>
+                                {item.quantity}
+                            </Box>
+
+                            <Box className={classes.boxItem}>
+                                Trạng thái:
+                            </Box>
+                            <Box className={classes.boxItem}>
+                                {item.status == 1 ? "Đang chuẩn bị" : "Đã phục vụ"}
+                            </Box>
                         </Box>
-                        <IconButton onClick={(e) => removeItem(index)}>
-                            <Clear />
-                        </IconButton>
-                        </Box> */}
-                        <Box className={classes.boxLeft}>
-                        <Box className={classes.boxDataName}>{data.name}</Box>
-                        <Box className={classes.boxDataPrice}>
-                            {data.price}
-                        </Box>
-                        </Box>
-                        <Box className={classes.boxRight}>
-                        <IconButton
-                            className={classes.boxIconButton}
-                            onClick={(e) => addQuantity(index)}
-                        >
-                            <AddCircle />
-                        </IconButton>
-                        <Box className={classes.boxDataTotal}>{data.total}</Box>
-                        <IconButton
-                            className={classes.boxIconButton}
-                            onClick={(e) => removeQuantity(index)}
-                        >
-                            <RemoveCircle />
-                        </IconButton>
-                        </Box>
-                    </Box>
                     ))}
                 </Box>
-                <Box className={classes.boxFooter}>
-                    <Box className={classes.boxFooterTitl}>
-                    <Box style={{ fontWeight: "500" }}>{element.total}</Box>
-                    <Box
-                        className={classes.boxDataTotal}
-                        style={{ border: "1px solid #ffffff" }}
-                    >
-                        {totalItems}
-                    </Box>
-                    <Box className={classes.boxDataPrice}>{totalPrice}</Box>
-                    </Box>
-                    <Box className={classes.boxButton}>
-                        <ButtonBox nameButton="Đặt hàng" />
-                    </Box>
-                </Box>
+
             </Box>
+            <Dialog open={isOpen} >
+                <DialogContent>
+                    <Box style={{ color: 'black' }}>
+                        {item.name}
+                    </Box>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <AddIcon style={{ color: 'black', cursor: "pointer" }} />
+
+                        <TextField
+                            className={`${classes.rootTextField}`}
+                            style={{ color: 'black !important' }}
+                            type="number"
+                            name="quantity"
+                        />
+                        <RemoveIcon style={{ color: 'black', cursor: "pointer" }} />
+                    </div>
+
+                </DialogContent>
+                <DialogActions>
+                    <DialogActions>
+                        <Button color="primary" onClick={updateItem}>
+                            Cập nhật
+                        </Button>
+
+                        <Button onClick={handleClose} color="primary">
+                            Quay lại
+                        </Button>
+
+                        <Button onClick={handleClose} color="primary">
+                            Hủy món
+                        </Button>
+                    </DialogActions>
+                </DialogActions>
+            </Dialog>
         </CustomerLayout>
+
+
     );
 };
 const element = {
-  id: "ID",
-  total: "Tổng",
+    id: "ID",
+    total: "Tổng",
 };
-const data = [
-  {
-    name: "my tom",
-    total: 2,
-    price: 2000,
-  },
-  {
-    name: "my cay",
-    total: 1,
-    price: 20000,
-  },
-  {
-    name: "coca",
-    total: 1,
-    price: 2000000,
-  },
-];
+
 const useStyles = makeStyles({
     iconButton: {
         padding: "9px",
@@ -136,11 +160,11 @@ const useStyles = makeStyles({
         justifyContent: "space-between",
         padding: "0px 8px",
         "& .MuiButtonBase-root": {
-        margin: "7px 0px",
-        backgroundColor: "rgb(0 0 0 / 0.2)",
-        color: "white",
-        width: "35px",
-        height: "35px",
+            margin: "7px 0px",
+            backgroundColor: "rgb(0 0 0 / 0.2)",
+            color: "white",
+            width: "35px",
+            height: "35px",
         },
     },
     boxBody: {
@@ -157,25 +181,26 @@ const useStyles = makeStyles({
         alignItems: "center",
         minHeight: "50px",
         margin: "0 auto",
-        marginTop: "7px",
-        marginBottom: "7px",
+        marginTop: "20px",
+        marginBottom: "20px",
         borderBottom: "1px solid rgb(0 0 0 / 0.1)",
-        // boxShadow: " 0 1px 3px 0 rgba(0,0,0,.2), 0 1px 6px 0 rgba(0,0,0,.19)",
+        boxShadow: " 0 1px 3px 0 rgba(0,0,0,.2), 0 1px 6px 0 rgba(0,0,0,.19)",
+        borderRadius: "25px",
+        padding: "10px",
+        cursor: "pointer"
     },
-    boxLeft: {
-        width: "65%",
+    boxItem: {
+        width: "50%",
         padding: "0px 0px 10px 10px",
-    },
-    boxRight: {
-        width: "35%",
-        display: "flex",
-    },
-    boxDataName: {
-        width: "100%",
         overflow: "auto",
         fontWeight: "500",
-        fontSize: "18px",
+        fontSize: "13px",
     },
+    boxTop: {
+        width: "100%",
+        display: "flex",
+    },
+
     boxDataTotal: {
         minWidth: "20px",
         border: "1px solid rgb(0 0 0 / 0.1)",
@@ -214,10 +239,10 @@ const useStyles = makeStyles({
         justifyContent: "space-between",
         borderBottom: "1px solid rgb(0 0 0 / 0.2)",
         "& .MuiButtonBase-root": {
-        padding: 0,
-        borderRadius: "0px",
-        backgroundColor: "#ff4d4d",
-        color: "white",
+            padding: 0,
+            borderRadius: "0px",
+            backgroundColor: "#ff4d4d",
+            color: "white",
         },
     },
     boxButton: {
@@ -225,8 +250,23 @@ const useStyles = makeStyles({
         margin: "19px 20px",
         height: "45px",
         "& .MuiButton-text": {
-        borderRadius: "2px",
+            borderRadius: "2px",
         },
+    },
+
+    rootTextField: {
+        "& .MuiFormLabel-root": {
+            color: "rgb(48, 92, 139)",
+
+        },
+        "& .MuiInputBase-root": {
+            color: "#000000",
+        },
+
+        "& .MuiInputBase-input": {
+            textAlign: 'center'
+        },
+
     },
 });
 export default memo(PayItems);

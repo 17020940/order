@@ -1,45 +1,34 @@
-let GATTServer
 
-const getGATTServer = () => {
-  return new Promise((resolve, reject) => {
-    if (!GATTServer) {
-      navigator.bluetooth.requestDevice({
+
+export class TokenUtil {
+
+  static gattServer = null;
+
+  static async getToken() {
+    if(!this.gattServer){
+
+      this.gattServer = await navigator.bluetooth.requestDevice({
         filters: [{ services: ['battery_service'] }]
       })
-        .then(device => {
-          return device.gatt.connect();
-        })
-        .then(server => {
-          GATTServer = server;
-          resolve(server);
-        })
-        .catch(e => {
-          reject(e);
-        })
-    } else {
-      resolve(GATTServer);
+      .then(device => {
+        return device.gatt.connect();
+      })
     }
-  })
-};
+    let token = await this.gattServer.getPrimaryService('battery_service')
+    .then(service => {
+      return service.getCharacteristic('battery_level');
+    })
+    .then(characteristic => {
+      return characteristic.readValue();
+    })
+    let enc = new TextDecoder("utf-8");
+    // console.log(enc.decode(token.buffer))
+    return enc.decode(token.buffer);
+  }
 
-export const getJWT = () => {
-  return new Promise((resolve, reject) => {
-    let jwtToken;
-    getGATTServer()
-      .then(server => {
-        return server.getPrimaryService('battery_service')
-      })
-      .then(service => {
-        return service.getCharacteristic('battery_level');
-      })
-      .then(characteristic => {
-        return characteristic.readValue();
-      })
-      .then(value => {
-        let enc = new TextDecoder("utf-8");
-        jwtToken = enc.decode(value.buffer);
-        resolve(jwtToken);
-      })
-      .catch(e => { reject(e)})
-  })
 }
+
+
+
+
+

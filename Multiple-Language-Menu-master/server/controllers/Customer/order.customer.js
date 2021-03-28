@@ -5,12 +5,12 @@ const Customer = db.customer;
 const Order = db.order;
 const Table = db.table;
 const OrderDetail = db.order_detail;
+const sequelize = db.sequelize;
 const imageToBase64 = require('image-to-base64');
-const { response } = require("express");
+const { QueryTypes } = require('sequelize');
 
 exports.createOrderSession = async (req, res) => {
     try {
-
         let customer = await Customer.findOne({
             where: {
                 telephone: req.body.telephone
@@ -33,14 +33,15 @@ exports.createOrderSession = async (req, res) => {
         });
 
         if (order) {
-            if (order.dataValues.tableId !=  req.body.tableId) {
+            if (order.dataValues.tableId != req.body.tableId) {
                 return res.status(200).send({ success: false, error: "Invalid table" });
             }
         } else {
             order = await Order.create({
-                time_start: new Date(),
+                time_start: new Date(new Date().getTime() + 7 * 60 * 100),
                 tableId: req.body.tableId,
-                customerId: customer.dataValues.id
+                customerId: customer.dataValues.id,
+                createdAt: new Date(new Date().getTime() + 7 * 60 * 100)
             })
         }
 
@@ -82,8 +83,8 @@ exports.getItem = async (req, res) => {
 
         });
 
-        // let imageFoler = "C:/Users/DUC_NHA/Pictures/datn/";
-        let imageFoler = "C:/Users/Administrator/Pictures/datn/";
+        let imageFoler = "C:/Users/DUC_NHA/Pictures/datn/";
+        // let imageFoler = "C:/Users/Administrator/Pictures/datn/";
         let data = await Promise.all(
             items.map(async item => {
                 const data = await imageToBase64(imageFoler + item.dataValues.image_item)
@@ -106,7 +107,7 @@ exports.getTable = async (req, res) => {
         let tables = await Table.findAll({
             attributes: ['id', 'name'],
             where: {
-                restaurantId: req.query.restaurantId 
+                restaurantId: req.query.restaurantId
             }
         })
 
@@ -118,26 +119,79 @@ exports.getTable = async (req, res) => {
     } catch (error) {
         res.status(500).send({ success: false, error: error.message });
     }
-    
+
 }
 
-exports.orderItem = async (req, res) => { 
+exports.orderItem = async (req, res) => {
     try {
-        if(!req.body.orderId || !req.body.itemId || !req.body.quantity || req.body.quantity < 0){
-            return res.status(200).send({success: true, error: "Invalid param"});
+        if (!req.body.orderId || !req.body.itemId || !req.body.quantity || req.body.quantity < 0) {
+            return res.status(200).send({ success: true, error: "Invalid param" });
         }
-        let orderDetail =  await OrderDetail.create({
+        let orderDetail = await OrderDetail.create({
             orderId: req.body.orderId,
             itemId: req.body.itemId,
             quantity: req.body.quantity,
             status: 1
         });
-        res.status(200).send({success: true, data: orderDetail});
+        res.status(200).send({ success: true, data: orderDetail });
     } catch (error) {
         console.log(error)
         res.status(500).send({ success: false, error: error.message });
     }
 };
 
-exports.orderHistory = (req, res) => { };
+exports.updateOrder = async (req, res) => {
+    try {
+        if (!req.body.id || !req.body.quantity || req.body.quantity < 0) {
+            return res.status(200).send({ success: true, error: "Invalid param" });
+        }
+        await OrderDetail.update(
+            {
+                status: 3
+            },
+
+            {
+                where: { id: req.body.id }
+            },
+
+        );
+
+        let newOrderDetail = await OrderDetail.create({
+            orderId: req.body.orderId,
+            itemId: req.body.itemId,
+            quantity: req.body.quantity,
+            parentId: req.body.id,
+            status: 1
+        });
+        res.status(200).send({ success: true, data: newOrderDetail });
+    } catch (error) {
+        console.log(error)
+        res.status(500).send({ success: false, error: error.message });
+    }
+};
+
+exports.getOrderDetail = async (req, res) => {
+    try {
+        sql = " SELECT";
+        sql += "    od.*,";
+        sql += "    i.name";
+        sql += " FROM ";
+        sql += "	order_details od";
+        sql += "	JOIN items i ON od.itemId = i.id";
+        sql += " WHERE";
+        sql += "    od.status IN (1,2)";
+        sql += "    AND od.orderId = :orderId";
+        const orderDetails = await sequelize.query(
+            sql,
+            {
+                replacements: { orderId: req.query.orderId },
+                type: QueryTypes.SELECT
+            }
+        );
+        res.status(200).send({ success: true, data: orderDetails });
+    } catch (error) {
+        console.log(error)
+        res.status(500).send({ success: false, error: error.message });
+    }
+};
 

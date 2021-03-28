@@ -4,7 +4,7 @@ import { makeStyles, Box, Select, MenuItem, InputLabel, FormControl } from "@mat
 import { useTranslation } from "react-i18next";
 import LabelText from "./Components/labelText";
 import { BoxButton, InputText } from "../../../components";
-import { getJWT } from "../../../utils/tokenUtil";
+import { TokenUtil } from "../../../utils/tokenUtil";
 import { Redirect } from "react-router-dom";
 import { useHistory } from "react-router-dom";
 import { postRequest } from "../../../utils/apiUtil";
@@ -19,6 +19,7 @@ const Introduce = () => {
   const [restaurantId, setRestaurantId] = useState(null);
   const [table, setTable] = useState([]);
   const [tables, setTables] = useState([]);
+  const [gattServer, setGattServer] = useState([]);
 
   const handleChange = (event) => {
     setTable(event.target.value);
@@ -29,60 +30,55 @@ const Introduce = () => {
     document.getElementById("telephoneInput").textContent = "";
   }
 
-  const onLogin = () => {
-    let param = {}
-    param.name = document.getElementsByName('username')[0].value;
-    param.telephone = document.getElementsByName('telephone')[0].value;
-    param.email = document.getElementsByName('email')[0].value;
-    param.tableId = table.id;
-    if (!param.telephone || param.telephone == "") {
-      document.getElementById("telephoneInput").textContent = "Không được để trống trường này";
-      return;
+  const onLogin = async () => {
+    try {
+      let param = {}
+      param.name = document.getElementsByName('username')[0].value;
+      param.telephone = document.getElementsByName('telephone')[0].value;
+      param.email = document.getElementsByName('email')[0].value;
+      param.tableId = table.id;
+      if (!param.telephone || param.telephone == "") {
+        document.getElementById("telephoneInput").textContent = "Không được để trống trường này";
+        return;
+      }
+      if (!param.tableId) {
+        document.getElementById("tableInput").textContent = "Chưa chọn bàn";
+        return;
+      }
+
+      let token = await TokenUtil.getToken();
+      let res = await postRequest("/api/order-session", param, token);
+      if (res.success) {
+        let state = { restaurantId: restaurantId, orderId: res.data.id };
+        history.push(PathConstant.CUSTOMER_CATEGORY, state);
+      } else if (res.error == "Invalid table") {
+        document.getElementById("loginInfo").textContent = "Bàn không hợp lệ";
+      }
+    } catch (error) {
+      console.log(error);
     }
-    if (!param.tableId) {
-      document.getElementById("tableInput").textContent = "Chưa chọn bàn";
-      return;
-    }
-    getJWT()
-      .then(token => {
-        return postRequest("/api/order-session", param, token);
-      })
-      .then(data => {
-        if (data.success) {
-          history.push(PathConstant.CUSTOMER_CATEGORY, "test")
-        } else if (data.error == "Invalid table") {
-          document.getElementById("loginInfo").textContent = "Bàn không hợp lệ"
-        }
-      })
-      .catch(e => console.log(e));
+
   };
 
-  const getRestaurentId = () => {
-    // getJWT()
-    //   .then(token => {
-    //     let restaurantId;
-    //     jwt.verify(token, "hoi-lam-cai-gi-1999", (error, decoded) => {
-    //       if (error) {
-    //         return;
-    //       }
-    //       restaurantId = decoded.restaurantId;
-    //     });
-    //     setRestaurantId(restaurantId);
-    //     return fetch(ApiConstant.BASE_URL + "/api/table?restaurantId=" + restaurantId)
-    //   })
-    //   .then(res => res.json())
-    //   .then(res => {
-    //     setTables(res.data);
-    //   })
-    //   .catch(e => console.log(e));
-    history.push(PathConstant.CUSTOMER_CATEGORY, "test")
-    // setRestaurantId(1);
-    // fetch(ApiConstant.BASE_URL + "/api/table?restaurantId=1")
-    // .then(res => res.json())
-    // .then(res => setTables(res.data))
-    // .catch(e => {
+  const getRestaurentId = async () => {
+    try {
+      let token = await TokenUtil.getToken();
+      let restaurantId;
+      jwt.verify(token, "hoi-lam-cai-gi-1999", (error, decoded) => {
+        if (error) {
+          return;
+        }
+        restaurantId = decoded.restaurantId;
+      });
 
-    // })
+      let res = await fetch(ApiConstant.BASE_URL + "/api/table?restaurantId=" + restaurantId)
+        .then(res => res.json());
+      setTables(res.data);
+      setRestaurantId(restaurantId);
+    } catch (error) {
+      console.log(error);
+    }
+
   };
   return (
     <Box className={classes.boxParent}>

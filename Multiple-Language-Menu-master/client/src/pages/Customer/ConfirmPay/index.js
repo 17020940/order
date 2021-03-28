@@ -3,7 +3,7 @@ import { makeStyles, Box } from "@material-ui/core";
 import { CustomerLayout } from "../../../layouts";
 import { useTranslation } from "react-i18next";
 import ButtonBox from "../../../components/buttonBox";
-const ConfirmPay = () => {
+const ConfirmPay = (props) => {
     const classes = useStyles();
     const { t: getLabel } = useTranslation();
     const listDate = ([
@@ -22,7 +22,8 @@ const ConfirmPay = () => {
             total: 10,
             price: 2000000
         }
-        ])
+    ])
+    console.log(props)
     let totalItems = 0;
     let totalPrice = 0;
     const total = listDate.forEach(element => {
@@ -30,7 +31,7 @@ const ConfirmPay = () => {
         totalPrice += element.price
     });
     return (
-    <CustomerLayout>
+    // <CustomerLayout>
       <Box className={classes.boxBorder}>
             <Box className={classes.boxHeader}>Confirm pay</Box>
             <Box className={classes.boxBody}>
@@ -54,7 +55,7 @@ const ConfirmPay = () => {
             </Box>
             
         </Box>
-    </CustomerLayout>
+    // </CustomerLayout>
   );
 };
 

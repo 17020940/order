@@ -207,8 +207,20 @@ module.exports = (app) => {
 
   app.post(
     "/api/order-item",
+    [middleware.verifyOrderToken],
     categoryCustomer.orderItem
   ); 
+
+  app.get(
+    "/api/order-detail",
+    categoryCustomer.getOrderDetail
+  ); 
+
+  app.put(
+    "/api/order-item",
+    [middleware.verifyOrderToken],
+    categoryCustomer.updateOrder
+  );
 
   const LanguageSchedule = require("../schedule/language.schedule");
 
