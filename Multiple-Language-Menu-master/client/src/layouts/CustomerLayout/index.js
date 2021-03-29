@@ -21,13 +21,14 @@ import {
   Translate,
   Storefront,
   RoomService,
+  ArrowBack
 } from "@material-ui/icons";
 import { LangConstant, PathConstant } from "../../const";
 import { useTranslation } from "react-i18next";
 
 import { useHistory } from "react-router-dom";
 
-const CustomerLayout = ({children, props}) => {
+const CustomerLayout = ({children, props, isDetailOrder}) => {
 
   const history = useHistory();
 
@@ -37,7 +38,11 @@ const CustomerLayout = ({children, props}) => {
   const [open, setOpen] = useState(false);
 
   const onDrawerOpen = () => {
-    setOpen(true);
+    if(isDetailOrder){
+      history.goBack();
+    }else {
+      setOpen(true);
+    }
   };
 
   const onDrawerClose = () => {
@@ -45,7 +50,7 @@ const CustomerLayout = ({children, props}) => {
   };
 
   const orderDetail = () => {
-    history.push(PathConstant.CUSTOMER_PAY, props);
+    history.push(PathConstant.CUSTOMER_ORDER_DETAIL, props);
   }
 
   const listSidebar = [
@@ -91,10 +96,11 @@ const CustomerLayout = ({children, props}) => {
             // disableRipple
             className={classes.menuButton}
           >
-            <Menu />
+            <Menu style={{display: isDetailOrder ? 'none' : null}}/>
+            <ArrowBack style={{display: !isDetailOrder ? 'none' : null}}/>
           </IconButton>
           <Typography variant="h3" noWrap className={classes.Title}>
-            MENUUU
+            {isDetailOrder ? 'Lịch sử order' : 'Menu'}
           </Typography>
           <IconButton 
             className={`${classes.orderButton} ${classes.boxChange}`}

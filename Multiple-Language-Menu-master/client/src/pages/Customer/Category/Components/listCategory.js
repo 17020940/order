@@ -21,6 +21,7 @@ import { useTranslation } from "react-i18next";
 import { TokenUtil } from "../../../../utils/tokenUtil";
 import { ApiConstant } from "../../../../const";
 import { postRequest } from "../../../../utils/apiUtil";
+import { Notify } from "../../../../components";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -60,6 +61,7 @@ function CategoryDetail({ category, value, index, orderId }) {
   const [items, setItems] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [item, setItem] = useState({});
+  const [open, setOpen] = useState(false);
   const classes = useStyles();
 
   const onClickItem = (indexItem) => {
@@ -78,8 +80,10 @@ function CategoryDetail({ category, value, index, orderId }) {
       param.orderId = orderId;
       param.itemId = item.id;
       param.quantity = +document.getElementsByName("quantity")[0].value;
-      postRequest("/api/order-item", param, token);
-
+      let res = await postRequest("/api/order-item", param, token);
+      if (res.success){
+        setOpen(true);
+      }
     } catch (error) {
       console.log(error)
     }
@@ -115,14 +119,16 @@ function CategoryDetail({ category, value, index, orderId }) {
       <Dialog open={isOpen} >
         <DialogContent>
           <Box style={{ color: 'black' }}>
-            {item.name}
+            <center>
+              {item.name}
+            </center>
           </Box>
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <AddIcon style={{ color: 'black', cursor: "pointer" }} />
 
             <TextField
               className={`${classes.rootTextField}`}
-              style={{ color: 'black !important' }}
+              style={{ color: 'black !important', marginLeft:'20px', marginRight: '20px' }}
               type="number"
               name="quantity"
             />
@@ -130,18 +136,19 @@ function CategoryDetail({ category, value, index, orderId }) {
           </div>
 
         </DialogContent>
-        <DialogActions>
-          <DialogActions>
-            <Button onClick={() => orderItem(item)} color="primary">
-              Thêm
+        <DialogActions style ={{justifyContent : 'space-around'}}>
+
+              <Button onClick={() => orderItem(item)} color="primary">
+                Thêm
           </Button>
-            <Button onClick={handleClose} color="primary">
-              Hủy
+              <Button onClick={handleClose} color="primary">
+                Hủy
           </Button>
-          </DialogActions>
         </DialogActions>
       </Dialog>
+      <Notify open={open} setOpen={setOpen} dataSuccess={'Thao tác thành công'} />
     </TabPanel>
+
 
 
   )

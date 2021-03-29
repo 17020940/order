@@ -151,7 +151,7 @@ exports.updateOrder = async (req, res) => {
             },
 
             {
-                where: { id: req.body.id }
+                where: { id: req.body.id, status: 1}
             },
 
         );
@@ -181,6 +181,8 @@ exports.getOrderDetail = async (req, res) => {
         sql += " WHERE";
         sql += "    od.status IN (1,2)";
         sql += "    AND od.orderId = :orderId";
+        sql += " ORDER BY";
+        sql += "    status, createdAt"
         const orderDetails = await sequelize.query(
             sql,
             {
@@ -189,6 +191,29 @@ exports.getOrderDetail = async (req, res) => {
             }
         );
         res.status(200).send({ success: true, data: orderDetails });
+    } catch (error) {
+        console.log(error)
+        res.status(500).send({ success: false, error: error.message });
+    }
+};
+
+exports.deleteOrder = async (req, res) => {
+    try {
+        if (!req.body.id) {
+            return res.status(200).send({ success: true, error: "Invalid param" });
+        }
+        await OrderDetail.update(
+            {
+                status: 4
+            },
+
+            {
+                where: { id: req.body.id, status: 1 }
+            },
+
+        );
+
+        res.status(200).send({ success: true });
     } catch (error) {
         console.log(error)
         res.status(500).send({ success: false, error: error.message });

@@ -1,24 +1,23 @@
 import React, { memo, useState, useEffect } from "react";
-// import { LangConstant } from "../../../../const";
 import {
     Button, makeStyles, Dialog, Box, DialogActions,
     DialogContent,
     TextField
 } from "@material-ui/core";
-import { useTranslation } from "react-i18next";
-import { putRequest } from "../../../utils/apiUtil";
-import ButtonBox from "../../../components/buttonBox";
+import { putRequest, deleteRequest } from "../../../utils/apiUtil";
 import { CustomerLayout } from "../../../layouts";
 import { ApiConstant } from "../../../const";
 import AddIcon from '@material-ui/icons/Add';
 import RemoveIcon from '@material-ui/icons/Remove';
 import { TokenUtil } from "../../../utils/tokenUtil";
+import { Notify } from "../../../components";
 
 const PayItems = (props) => {
     const classes = useStyles();
     const [items, setItems] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
     const [item, setItem] = useState({});
+    const [open, setOpen] = useState(false);
 
     useEffect(() => {
         getOrderDetail();
@@ -27,38 +26,50 @@ const PayItems = (props) => {
     const getOrderDetail = () => {
         let orderId = props.location.state.orderId;
         fetch(ApiConstant.BASE_URL + "/api/order-detail?orderId=" + orderId)
-        .then(res => res.json())
-        .then(res => {
-            setItems(res.data);
-        })
-        .catch(error => console.log(error))
+            .then(res => res.json())
+            .then(res => {
+                setItems(res.data);
+            })
+            .catch(error => console.log(error))
     }
 
     const editOrder = async (index) => {
-        await setIsOpen(true);
-        await setItem(items[index]);
-        document.getElementsByName("quantity")[0].value = items[index].quantity;
+        if (items[index].status == 1) {
+            await setIsOpen(true);
+            await setItem(items[index]);
+            document.getElementsByName("quantity")[0].value = items[index].quantity;
+        }
     }
 
     const handleClose = () => {
         setIsOpen(false);
     }
 
-    const updateItem = async (index) => {
+    const deleteOrder = async () => {
+        let token = await TokenUtil.getToken();
+        let res = await deleteRequest("/api/order-item", item, token);
+        if(res.success){
+            setOpen(true);
+        }
+        setIsOpen(false);
+        getOrderDetail();
+    }
+
+    const updateItem = async () => {
         let token = await TokenUtil.getToken();
         let newItem = { ...item };
         newItem.quantity = +document.getElementsByName("quantity")[0].value;
-        let response = await putRequest("/api/order-item", newItem, token);
+        let res = await putRequest("/api/order-item", newItem, token);
+        if(res.success){
+            setOpen(true);
+        }
         setIsOpen(false);
         getOrderDetail();
     }
 
     return (
-        <CustomerLayout>
+        <CustomerLayout isDetailOrder={true}>
             <Box className={classes.boxBorder}>
-                <Box className={classes.boxHeader}>
-                    <Box>Pay Pay</Box>
-                </Box>
                 <Box className={classes.boxBody}>
                     {items.map((item, index) => (
                         <Box className={classes.boxContent} key={index} onClick={() => editOrder(index)}>
@@ -99,7 +110,9 @@ const PayItems = (props) => {
             <Dialog open={isOpen} >
                 <DialogContent>
                     <Box style={{ color: 'black' }}>
-                        {item.name}
+                        <center>
+                            {item.name}
+                        </center>
                     </Box>
                     <div style={{ display: 'flex', alignItems: 'center' }}>
                         <AddIcon style={{ color: 'black', cursor: "pointer" }} />
@@ -124,12 +137,13 @@ const PayItems = (props) => {
                             Quay lại
                         </Button>
 
-                        <Button onClick={handleClose} color="primary">
+                        <Button onClick={deleteOrder} color="primary">
                             Hủy món
                         </Button>
                     </DialogActions>
                 </DialogActions>
             </Dialog>
+            <Notify open={open} setOpen={setOpen} dataSuccess={'Thao tác thành công'} />
         </CustomerLayout>
 
 
@@ -170,9 +184,10 @@ const useStyles = makeStyles({
     boxBody: {
         // margin: "0 auto",
         width: "100%",
-        height: "400px",
+        // height: "400px",
         overflow: "auto",
-        paddingBottom: "65px",
+        backgroundColor: "#F2F3F5",
+
     },
     boxContent: {
         width: "92%",
@@ -187,7 +202,8 @@ const useStyles = makeStyles({
         boxShadow: " 0 1px 3px 0 rgba(0,0,0,.2), 0 1px 6px 0 rgba(0,0,0,.19)",
         borderRadius: "25px",
         padding: "10px",
-        cursor: "pointer"
+        cursor: "pointer",
+        backgroundColor: "#fff",
     },
     boxItem: {
         width: "50%",

@@ -222,6 +222,12 @@ module.exports = (app) => {
     categoryCustomer.updateOrder
   );
 
+  app.delete(
+    "/api/order-item",
+    [middleware.verifyOrderToken],
+    categoryCustomer.deleteOrder
+  );
+
   const LanguageSchedule = require("../schedule/language.schedule");
 
   const StateInterval = () => {

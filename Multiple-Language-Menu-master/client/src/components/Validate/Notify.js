@@ -14,9 +14,9 @@ const Notify = (props) => {
     <div className={classes.root}>
       {dataSuccess && (
         <Snackbar
-          anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
           open={open}
-          autoHideDuration={6000}
+          autoHideDuration={3000}
           onClose={onClose}
         >
           <Alert
@@ -31,7 +31,7 @@ const Notify = (props) => {
       )}
       {dataError && (
         <Snackbar
-          anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
           open={open}
           autoHideDuration={6000}
           onClose={onClose}
