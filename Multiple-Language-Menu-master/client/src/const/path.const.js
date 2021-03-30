@@ -26,4 +26,5 @@ export const CUSTOMER_INFO = "/:id/info";
 export const CUSTOMER_ORDER_HISTORY = "/:id/order-history";
 export const CUSTOMER_ITEM_CATEGORY = "/:id/categories/:id";
 export const CUSTOMER_ORDER_DETAIL = "/order/detail";
+export const CUSTOMER_LOGIN = "/login";
 export const CUSTOMER_CONFIRM_PAY = "/:id/confirm-pay"
