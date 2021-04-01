@@ -145,7 +145,7 @@ const CustomerLayout = ({children, props, isDetailOrder}) => {
         </List>
       </Drawer>
       <main className={classes.content}>
-        <div className={classes.toolbar} />
+        {/* <div className={classes.toolbar} /> */}
         {children}
       </main>
     </div>
@@ -206,6 +206,7 @@ const useStyles = makeStyles((theme) => ({
     display: "none",
   },
   toolbar: {
+    height: '8vh !important',
     display: "flex",
     alignItems: "center",
     justifyContent: "flex-end",

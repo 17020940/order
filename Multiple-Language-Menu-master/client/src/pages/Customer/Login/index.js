@@ -11,20 +11,13 @@ import { ApiConstant } from "../../../const";
 import QrReader from 'react-qr-reader'
 const jwt = require("jsonwebtoken");
 
-const CustomerLogin = () => {
+const CustomerLogin = (props) => {
   const history = useHistory();
   const classes = useStyles();
   const { t: getLabel } = useTranslation();
   const [restaurantId, setRestaurantId] = useState(null);
-  const [table, setTable] = useState([]);
-  const [tables, setTables] = useState([]);
-  const [gattServer, setGattServer] = useState([]);
 
 
-  const handleChange = (event) => {
-    setTable(event.target.value);
-    document.getElementById("tableInput").textContent = "";
-  }
 
   const onChange = () => {
     document.getElementById("telephoneInput").textContent = "";
@@ -32,21 +25,20 @@ const CustomerLogin = () => {
 
   const onLogin = async () => {
     try {
-      let param = {}
-      param.name = document.getElementsByName('username')[0].value;
-      param.telephone = document.getElementsByName('telephone')[0].value;
-      param.email = document.getElementsByName('email')[0].value;
-      param.tableId = table.id;
-      if (!param.telephone || param.telephone == "") {
-        document.getElementById("telephoneInput").textContent = "Không được để trống trường này";
-        return;
-      }
-      if (!param.tableId) {
-        document.getElementById("tableInput").textContent = "Chưa chọn bàn";
-        return;
-      }
-
-      let token = await TokenUtil.getToken();
+      // let tableId = props.location.state.tableId;
+      // console.log(tableId)
+      // let param = {}
+      // param.name = document.getElementsByName('username')[0].value;
+      // param.telephone = document.getElementsByName('telephone')[0].value;
+      // param.email = document.getElementsByName('email')[0].value;
+      // param.tableId = tableId;
+      // if (!param.telephone || param.telephone == "") {
+      //   document.getElementById("telephoneInput").textContent = "Không được để trống trường này";
+      //   return;
+      // }
+      // let token = await TokenUtil.getToken();
+      let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyZXN0YXVyYW50SWQiOjEsImV4cCI6MTYxOTgzMzUxNzQwN30.MSo_eHMHUf1m7ap9uXb9B7_XtmzdDUCH3mWvPAC9NCk";
+      let param = {name:null,telephone: '12345678', email: null, tableId : 1};
       let res = await postRequest("/api/order-session", param, token);
       if (res.success) {
         let state = { restaurantId: restaurantId, orderId: res.data.id };
@@ -73,7 +65,6 @@ const CustomerLogin = () => {
 
       let res = await fetch(ApiConstant.BASE_URL + "/api/table?restaurantId=" + restaurantId)
         .then(res => res.json());
-      setTables(res.data);
       setRestaurantId(restaurantId);
     } catch (error) {
       console.log(error);
@@ -82,8 +73,7 @@ const CustomerLogin = () => {
   };
   return (
     <Box className={classes.boxParent}>
-      asdasd
-      {/* <Box className={classes.box1}>
+      <Box className={classes.box1}>
 
         <Box className={classes.box3} style={{ display: "block" }}>
           <form id="formLogin">
@@ -114,7 +104,7 @@ const CustomerLogin = () => {
             <span id="loginInfo" ></span>
           </Box>
         </Box>
-      </Box> */}
+      </Box>
     </Box>
   );
 };

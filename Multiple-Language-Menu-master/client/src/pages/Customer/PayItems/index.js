@@ -1,18 +1,22 @@
 import React, { memo, useState, useEffect } from "react";
 import {
-    Button, makeStyles, Dialog, Box, DialogActions,
+    makeStyles, Dialog, Box, DialogActions,
     DialogContent,
     TextField
 } from "@material-ui/core";
+import { PathConstant, LangConstant } from "../../../const";
+import { BoxButton } from "../../../components";
 import { putRequest, deleteRequest } from "../../../utils/apiUtil";
 import { CustomerLayout } from "../../../layouts";
 import { ApiConstant } from "../../../const";
 import AddIcon from '@material-ui/icons/Add';
 import RemoveIcon from '@material-ui/icons/Remove';
+import { useTranslation } from "react-i18next";
 import { TokenUtil } from "../../../utils/tokenUtil";
 import { Notify } from "../../../components";
 
 const PayItems = (props) => {
+    const { t: getLabel } = useTranslation();
     const classes = useStyles();
     const [items, setItems] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
@@ -48,7 +52,7 @@ const PayItems = (props) => {
     const deleteOrder = async () => {
         let token = await TokenUtil.getToken();
         let res = await deleteRequest("/api/order-item", item, token);
-        if(res.success){
+        if (res.success) {
             setOpen(true);
         }
         setIsOpen(false);
@@ -60,7 +64,7 @@ const PayItems = (props) => {
         let newItem = { ...item };
         newItem.quantity = +document.getElementsByName("quantity")[0].value;
         let res = await putRequest("/api/order-item", newItem, token);
-        if(res.success){
+        if (res.success) {
             setOpen(true);
         }
         setIsOpen(false);
@@ -81,13 +85,13 @@ const PayItems = (props) => {
                                 {item.name}
                             </Box>
 
-                            <Box className={classes.boxItem}>
+                            {/* <Box className={classes.boxItem}>
                                 Thời gian order:
                             </Box>
 
                             <Box className={classes.boxItem}>
                                 {new Date(item.createdAt).toLocaleString()}
-                            </Box>
+                            </Box> */}
 
                             <Box className={classes.boxItem}>
                                 Số lượng:
@@ -100,14 +104,20 @@ const PayItems = (props) => {
                                 Trạng thái:
                             </Box>
                             <Box className={classes.boxItem}>
-                                {item.status == 1 ? "Đang chuẩn bị" : "Đã phục vụ"}
+                                {item.status == 0 ? "Chưa yêu cầu" : "Đã yêu cầu"}
                             </Box>
                         </Box>
                     ))}
                 </Box>
 
             </Box>
-            <Dialog open={isOpen} >
+            <Box className={classes.boxButton}>
+                <BoxButton
+                    nameButton={'Cập nhật yêu cầu'}
+                />
+                <span id="loginInfo" ></span>
+            </Box>
+            {/* <Dialog open={isOpen} >
                 <DialogContent>
                     <Box style={{ color: 'black' }}>
                         <center>
@@ -142,7 +152,7 @@ const PayItems = (props) => {
                         </Button>
                     </DialogActions>
                 </DialogActions>
-            </Dialog>
+            </Dialog> */}
             <Notify open={open} setOpen={setOpen} dataSuccess={'Thao tác thành công'} />
         </CustomerLayout>
 
@@ -183,8 +193,9 @@ const useStyles = makeStyles({
     },
     boxBody: {
         // margin: "0 auto",
+        marginTop: '56px',
         width: "100%",
-        // height: "400px",
+        height: "calc(92vh - 56px)",
         overflow: "auto",
         backgroundColor: "#F2F3F5",
 
@@ -262,11 +273,14 @@ const useStyles = makeStyles({
         },
     },
     boxButton: {
-        width: "calc(100% - 40px)",
-        margin: "19px 20px",
-        height: "45px",
+        position: 'absolute',
+        bottom: '0',
+        zIndex: '100',
+        width: "100%",
+        textAlign: "center",
+        height: "8vh",
         "& .MuiButton-text": {
-            borderRadius: "2px",
+            borderRadius: "0px",
         },
     },
 

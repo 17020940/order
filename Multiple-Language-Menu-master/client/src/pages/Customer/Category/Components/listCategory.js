@@ -76,6 +76,7 @@ function CategoryDetail({ category, value, index, orderId }) {
   const orderItem = async (item) => {
     try {
       let token = await TokenUtil.getToken();
+      token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyZXN0YXVyYW50SWQiOjEsImV4cCI6MTYxOTgzMzUxNzQwN30.MSo_eHMHUf1m7ap9uXb9B7_XtmzdDUCH3mWvPAC9NCk";
       let param = {};
       param.orderId = orderId;
       param.itemId = item.id;

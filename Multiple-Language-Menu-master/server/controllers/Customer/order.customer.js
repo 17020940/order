@@ -83,8 +83,8 @@ exports.getItem = async (req, res) => {
 
         });
 
-        let imageFoler = "C:/Users/DUC_NHA/Pictures/datn/";
-        // let imageFoler = "C:/Users/Administrator/Pictures/datn/";
+        // let imageFoler = "C:/Users/DUC_NHA/Pictures/datn/";
+        let imageFoler = "C:/Users/Administrator/Pictures/datn/";
         let data = await Promise.all(
             items.map(async item => {
                 const data = await imageToBase64(imageFoler + item.dataValues.image_item)
@@ -131,7 +131,7 @@ exports.orderItem = async (req, res) => {
             orderId: req.body.orderId,
             itemId: req.body.itemId,
             quantity: req.body.quantity,
-            status: 1
+            status: 0
         });
         res.status(200).send({ success: true, data: orderDetail });
     } catch (error) {
@@ -173,16 +173,19 @@ exports.updateOrder = async (req, res) => {
 exports.getOrderDetail = async (req, res) => {
     try {
         sql = " SELECT";
-        sql += "    od.*,";
-        sql += "    i.name";
+        sql += "    od.status,";
+        sql += "    i.name,";
+        sql += "    SUM( quantity) AS quantity"
         sql += " FROM ";
         sql += "	order_details od";
         sql += "	JOIN items i ON od.itemId = i.id";
         sql += " WHERE";
-        sql += "    od.status IN (1,2)";
+        sql += "    od.status IN (0,1,2)";
         sql += "    AND od.orderId = :orderId";
+        sql += " GROUP BY"
+        sql += "    od.itemId"
         sql += " ORDER BY";
-        sql += "    status, createdAt"
+        sql += "    status"
         const orderDetails = await sequelize.query(
             sql,
             {
