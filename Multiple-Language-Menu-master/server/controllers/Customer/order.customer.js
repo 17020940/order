@@ -140,30 +140,23 @@ exports.orderItem = async (req, res) => {
     }
 };
 
+
 exports.updateOrder = async (req, res) => {
     try {
-        if (!req.body.id || !req.body.quantity || req.body.quantity < 0) {
+        if (!req.body.orderId) {
             return res.status(200).send({ success: true, error: "Invalid param" });
         }
         await OrderDetail.update(
             {
-                status: 3
+                status: 1
             },
 
             {
-                where: { id: req.body.id, status: 1}
+                where: { orderId: req.body.orderId, status: 0}
             },
 
         );
-
-        let newOrderDetail = await OrderDetail.create({
-            orderId: req.body.orderId,
-            itemId: req.body.itemId,
-            quantity: req.body.quantity,
-            parentId: req.body.id,
-            status: 1
-        });
-        res.status(200).send({ success: true, data: newOrderDetail });
+        res.status(200).send({ success: true });
     } catch (error) {
         console.log(error)
         res.status(500).send({ success: false, error: error.message });
@@ -200,26 +193,4 @@ exports.getOrderDetail = async (req, res) => {
     }
 };
 
-exports.deleteOrder = async (req, res) => {
-    try {
-        if (!req.body.id) {
-            return res.status(200).send({ success: true, error: "Invalid param" });
-        }
-        await OrderDetail.update(
-            {
-                status: 4
-            },
-
-            {
-                where: { id: req.body.id, status: 1 }
-            },
-
-        );
-
-        res.status(200).send({ success: true });
-    } catch (error) {
-        console.log(error)
-        res.status(500).send({ success: false, error: error.message });
-    }
-};
 

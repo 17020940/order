@@ -7,6 +7,7 @@ const googleTranslate = new Translate({
 });
 const language = require("../configs/language");
 const db = require("../models/index");
+const randomString = require("randomstring");
 const Account = db.account;
 const Restaurant = db.restaurant;
 const Address = db.address;
@@ -43,59 +44,32 @@ exports.UpdateState = async () => {
 
 exports.RestaurantInfoSchedule = async () => {
   try {
-    let shorestaurants = await Restaurant.findAll({
-      where: {
-        status_change: true,
-      },
+    let restaurants = await Restaurant.findAll({
+      // where: {
+      //   status_change: true,
+      // },
     });
-    for (let i = 0; i < restaurants.length; i++) {
-      for (let j = 1; j < 30; j++) {
-        let restaurantInfos = await RestaurantInfo.findOne({
-          where: {
-            languageId: j,
-            restaurantId: restaurants[i].id,
-          },
-        });
-        let [newRestaurantType] = await googleTranslate.translate(
-          restaurants[i].restaurant_type,
-          language[j - 1].lang_code
-        );
-        let [newRestaurantName] = await googleTranslate.translate(
-          restaurants[i].shop_name,
-          language[j - 1].lang_code
-        );
-        if (restaurantInfos) {
-          RestaurantInfo.update(
-            {
-              restaurant_type: newRestaurantType,
-              restaurant_name: newRestaurantName,
-            },
-            {
-              where: {
-                id: restaurantInfos[i].id,
-              },
-            }
-          );
-        } else {
-          RestaurantInfo.create({
-            restaurant_type: newRestaurantType,
-            restaurant_name: newRestaurantName,
-            languageId: j,
-            restaurantId: restaurants[i].id,
-          });
-        }
-      }
+    restaurants = restaurants.map(restaurant => restaurant.dataValues);
+    restaurants.forEach(restaurant => {
+
+      restaurant.api_key = randomString.generate({
+        length: 16,
+        charset: 'alphanumeric'
+      });
+
       Restaurant.update(
         {
-          status_change: false,
+          api_key: restaurant.api_key,
         },
         {
           where: {
-            id: restaurants[i].id,
+            id: restaurant.id,
           },
         }
       );
-    }
+
+    })
+
   } catch (error) {
     console.log(error);
   }

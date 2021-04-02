@@ -1,5 +1,7 @@
 const jwt = require("jsonwebtoken");
 const config = require("../configs/secret-key");
+const db = require("../models/index");
+const Restaurant = db.restaurant;
 
 exports.verifyTokenAdmin = (req, res, next) => {
   let token = req.headers["accesstoken"];
@@ -65,33 +67,50 @@ exports.verifyTokenRestaurant = (req, res, next) => {
   });
 };
 
-exports.verifyOrderToken = (req, res, next) => {
-  let token = req.headers["accesstoken"];
-  if (!token) {
+exports.verifyOrderToken = async (req, res, next) => {
+  try {
+    let apiKey = req.headers["api-key"];
+
+    if (!apiKey) {
+      return res.status(401).send({
+        success: false,
+        error: "Unauthorized: No API key provided.",
+      });
+    }
+    let retaurantId;
+
+    if (apiKey.split("-").length != 2){
+      return res.status(401).send({
+        success: false,
+        error: "Unauthorized: Invalid API key.",
+      }); 
+    }
+    retaurantId = apiKey.split("-")[0];
+    apiKey = apiKey.split("-")[1];
+
+
+    let restaurant = await Restaurant.findOne({
+      where: {
+        id: retaurantId
+      }
+    })
+
+    if (!restaurant || apiKey != restaurant.dataValues.api_key) {
+      return res.status(401).send({
+        success: false,
+        error: "Unauthorized: Invalid API key.",
+      });
+    }
+
+    next();
+  } catch (error) {
+    console.log(error);
     return res.status(401).send({
       success: false,
-      error: "Unauthorized: No token provided.",
+      error: error,
     });
   }
 
-  jwt.verify(token, config.secretKey, (error, decoded) => {
-    if (error) {
-      return res.status(401).send({
-        success: false,
-        error: "Fail to Authentication. Error -> " + error,
-      });
-    }
-
-    if(decoded.exp < new Date().getTime()){
-      return res.status(401).send({
-        success: false,
-        error: "Token is expired",
-      });
-    }
-    console.log(decoded)
-    next();
-    
-  });
 };
 
 

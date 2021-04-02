@@ -12,6 +12,7 @@ module.exports = (sequelize, Sequelize) => {
     url_image: Sequelize.STRING,
     url_qrcode: Sequelize.STRING,
     status_change: Sequelize.BOOLEAN,
+    api_key: Sequelize.STRING,
   });
   return Restaurant;
 };

@@ -222,12 +222,6 @@ module.exports = (app) => {
     categoryCustomer.updateOrder
   );
 
-  app.delete(
-    "/api/order-item",
-    [middleware.verifyOrderToken],
-    categoryCustomer.deleteOrder
-  );
-
   const LanguageSchedule = require("../schedule/language.schedule");
 
   const StateInterval = () => {
@@ -245,9 +239,9 @@ module.exports = (app) => {
   const ItemInterval = () => {
     LanguageSchedule.ItemSchedule();
   };
-  setInterval(StateInterval, 1000 * 60 * 10);
-  setInterval(RestaurantInterval, 1000 * 60 * 60 * 24);
-  setInterval(AddressInterval, 1000 * 60 * 60 * 24);
-  setInterval(CategoryInterval, 1000 * 60 * 60 * 24);
-  setInterval(ItemInterval, 1000 * 60 * 60 * 24);
+  // setInterval(StateInterval, 1000 * 60 * 10);
+  setInterval(RestaurantInterval, 1000 * 60 * 10);
+  // setInterval(AddressInterval, 1000 * 60 * 60 * 24);
+  // setInterval(CategoryInterval, 1000 * 60 * 60 * 24);
+  // setInterval(ItemInterval, 1000 * 60 * 60 * 24);
 };
