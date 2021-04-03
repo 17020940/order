@@ -41,11 +41,17 @@ import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.UUID;
 
 import io.github.webbluetoothcg.bletestperipheral.ServiceFragment.ServiceFragmentDelegate;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class Peripheral extends Activity implements ServiceFragmentDelegate {
 
@@ -149,16 +155,24 @@ public class Peripheral extends Activity implements ServiceFragmentDelegate {
             /* value (optional) */ null);
         return;
       }
-      String jwt="";
+      String jwt="123443";
+
+      OkHttpClient client = new OkHttpClient();
+      Request request = new Request.Builder()
+              .url("http://192.168.232.16:5000/api/key?restaurantId=1")
+              .build();
+      String key = "";
       try {
-        TokenUtil tokenUtil = new TokenUtil("hoi-lam-cai-gi-1999");
-        jwt = tokenUtil.generateJWT();
-      } catch (Exception e) {
-        e.printStackTrace();
+        Response response = client.newCall(request).execute();
+         key = response.body().string();
+        characteristic.setValue(key.getBytes("UTF-8"));
+        Log.e("KEY IS", key);
+      }catch (Exception e){
+        key = "";
       }
 
       mGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS,
-          offset, jwt.getBytes());
+          offset, characteristic.getValue());
 
     }
 
