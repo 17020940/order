@@ -75,13 +75,12 @@ function CategoryDetail({ category, value, index, orderId }) {
 
   const orderItem = async (item) => {
     try {
-      let token = await TokenUtil.getToken();
-      token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyZXN0YXVyYW50SWQiOjEsImV4cCI6MTYxOTgzMzUxNzQwN30.MSo_eHMHUf1m7ap9uXb9B7_XtmzdDUCH3mWvPAC9NCk";
+      const key = "1-" + await TokenUtil.getToken();
       let param = {};
       param.orderId = orderId;
       param.itemId = item.id;
       param.quantity = +document.getElementsByName("quantity")[0].value;
-      let res = await postRequest("/api/order-item", param, token);
+      let res = await postRequest("/api/order-item", param, key);
       if (res.success){
         setOpen(true);
       }
@@ -165,7 +164,7 @@ function SimpleTabs({ categories, orderId }) {
   return (
     <>
       <div className={classes.root}>
-        <AppBar className={classes.root} position="static" style={{ boxShadow: 'none' }}>
+        <AppBar  position="static" style={{ boxShadow: 'none' }}>
           <Tabs value={value} onChange={handleChange} variant="scrollable" indicatorColor="secondary"
             textColor="secondary" scrollButtons="auto" aria-label="simple tabs example" >
             {
@@ -235,6 +234,7 @@ const useStyles = makeStyles({
 
   root: {
     flexGrow: 1,
+    paddingTop: 64
   },
   // boxButton:{
   //     width: "100%",

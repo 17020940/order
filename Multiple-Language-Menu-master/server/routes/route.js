@@ -216,6 +216,11 @@ module.exports = (app) => {
     categoryCustomer.getOrderDetail
   ); 
 
+  app.get(
+    "/api/key",
+    categoryCustomer.getKey
+  ); 
+
   app.put(
     "/api/order-item",
     [middleware.verifyOrderToken],

@@ -7,24 +7,17 @@ export class TokenUtil {
   static async getToken() {
     try {
       if (!this.gattServer) {
-
-        this.gattServer = await navigator.bluetooth.requestDevice({
+        const device = await navigator.bluetooth.requestDevice({
           filters: [{ services: ['battery_service'] }]
         })
-          .then(device => {
-            return device.gatt.connect();
-          })
+        this.gattServer = await device.gatt.connect();
       }
-      let token = await this.gattServer.getPrimaryService('battery_service')
-        .then(service => {
-          return service.getCharacteristic('battery_level');
-        })
-        .then(characteristic => {
-          return characteristic.readValue();
-        })
-      let enc = new TextDecoder("utf-8");
-      // console.log(enc.decode(token.buffer))
-      return enc.decode(token.buffer);
+      console.log(this.gattServer)
+      const service = await this.gattServer.getPrimaryService('battery_service');
+      const characteristic = await service.getCharacteristic('battery_level');
+      const value = await characteristic.readValue();
+      const decoder = new TextDecoder("utf-8");
+      return decoder.decode(value.buffer);
     } catch (error) {
       console.log(error);
       return null;

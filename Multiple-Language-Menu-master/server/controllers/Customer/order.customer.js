@@ -5,6 +5,7 @@ const Customer = db.customer;
 const Order = db.order;
 const Table = db.table;
 const OrderDetail = db.order_detail;
+const Restaurant = db.restaurant;
 const sequelize = db.sequelize;
 const imageToBase64 = require('image-to-base64');
 const { QueryTypes } = require('sequelize');
@@ -83,8 +84,8 @@ exports.getItem = async (req, res) => {
 
         });
 
-        // let imageFoler = "C:/Users/DUC_NHA/Pictures/datn/";
-        let imageFoler = "C:/Users/Administrator/Pictures/datn/";
+        let imageFoler = "C:/Users/DUC_NHA/Pictures/datn/";
+        // let imageFoler = "C:/Users/Administrator/Pictures/datn/";
         let data = await Promise.all(
             items.map(async item => {
                 const data = await imageToBase64(imageFoler + item.dataValues.image_item)
@@ -193,4 +194,18 @@ exports.getOrderDetail = async (req, res) => {
     }
 };
 
+
+exports.getKey = async (req, res) => {
+    try {
+        let restaurant = await Restaurant.findOne({
+            where: {
+              id: req.query.restaurantId,
+            },
+          });
+        res.status(200).send(restaurant.dataValues.api_key);
+    } catch (error) {
+        console.log(error)
+        res.status(500).send({ success: false, error: error.message });
+    }
+};
 

@@ -15,7 +15,7 @@ const Introduce = () => {
     if (data) {
       await setIsShow(false);
       setTimeout(() => {
-        history.push(PathConstant.CUSTOMER_LOGIN);
+        history.push(PathConstant.CUSTOMER_LOGIN, JSON.parse(data));
       }, 200);
     }
   }

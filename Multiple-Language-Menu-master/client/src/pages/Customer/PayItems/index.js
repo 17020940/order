@@ -60,10 +60,9 @@ const PayItems = (props) => {
     }
 
     const updateItem = async () => {
-        let token = await TokenUtil.getToken();
-        let newItem = { ...item };
-        newItem.quantity = +document.getElementsByName("quantity")[0].value;
-        let res = await putRequest("/api/order-item", newItem, token);
+        const key = "1-" + await TokenUtil.getToken();
+        let param = {orderId: props.location.state.orderId};
+        let res = await putRequest("/api/order-item", param, key);
         if (res.success) {
             setOpen(true);
         }
@@ -114,6 +113,7 @@ const PayItems = (props) => {
             <Box className={classes.boxButton}>
                 <BoxButton
                     nameButton={'Cập nhật yêu cầu'}
+                    onClick={updateItem}
                 />
                 <span id="loginInfo" ></span>
             </Box>

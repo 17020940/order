@@ -1,4 +1,4 @@
-export const postRequest = async (url = '', data = {}, token) => {
+export const postRequest = async (url = '', data = {}, key) => {
   // Default options are marked with *
   const response = await fetch("http://localhost:5000" + url, {
     method: 'POST', // *GET, POST, PUT, DELETE, etc.
@@ -7,7 +7,7 @@ export const postRequest = async (url = '', data = {}, token) => {
     credentials: 'same-origin', // include, *same-origin, omit
     headers: {
       'Content-Type': 'application/json',
-      'accesstoken': token
+      'api-key': key,
       // 'Content-Type': 'application/x-www-form-urlencoded',
     },
     redirect: 'follow', // manual, *follow, error
@@ -17,7 +17,7 @@ export const postRequest = async (url = '', data = {}, token) => {
   return response.json(); // parses JSON response into native JavaScript objects
 }
 
-export const putRequest = async (url = '', data = {}, token) => {
+export const putRequest = async (url = '', data = {}, key) => {
   // Default options are marked with *
   const response = await fetch("http://localhost:5000" + url, {
     method: 'PUT', // *GET, POST, PUT, DELETE, etc.
@@ -26,7 +26,7 @@ export const putRequest = async (url = '', data = {}, token) => {
     credentials: 'same-origin', // include, *same-origin, omit
     headers: {
       'Content-Type': 'application/json',
-      'accesstoken': token
+      'api-key': key
       // 'Content-Type': 'application/x-www-form-urlencoded',
     },
     redirect: 'follow', // manual, *follow, error
