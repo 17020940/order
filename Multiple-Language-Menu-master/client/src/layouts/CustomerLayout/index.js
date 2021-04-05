@@ -100,7 +100,7 @@ const CustomerLayout = ({children, props, isDetailOrder}) => {
             <ArrowBack style={{display: !isDetailOrder ? 'none' : null}}/>
           </IconButton>
           <Typography variant="h3" noWrap className={classes.Title}>
-            {isDetailOrder ? 'Lịch sử order' : 'Menu'}
+            {isDetailOrder ? 'Chi tiết' : 'Menu'}
           </Typography>
           <IconButton 
             className={`${classes.orderButton} ${classes.boxChange}`}

@@ -103,7 +103,7 @@ const PayItems = (props) => {
                                 Trạng thái:
                             </Box>
                             <Box className={classes.boxItem}>
-                                {item.status == 0 ? "Chưa yêu cầu" : "Đã yêu cầu"}
+                                {item.type == 0 ? "Chưa yêu cầu" : "Đã yêu cầu"}
                             </Box>
                         </Box>
                     ))}

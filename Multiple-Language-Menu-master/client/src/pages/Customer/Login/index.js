@@ -14,12 +14,15 @@ const CustomerLogin = (props) => {
   const history = useHistory();
   const classes = useStyles();
   const { t: getLabel } = useTranslation();
-  const [restaurantId, setRestaurantId] = useState(props.location.state.restauranId);
+  const [restaurantId, setRestaurantId] = useState(props.location.state.restaurantId);
   const [tableId, setTableId] = useState(props.location.state.tableId);
 
   const onChange = () => {
     document.getElementById("telephoneInput").textContent = "";
   }
+
+  console.log()
+
 
   const onLogin = async () => {
     try {
@@ -33,7 +36,7 @@ const CustomerLogin = (props) => {
         document.getElementById("telephoneInput").textContent = "Không được để trống trường này";
         return;
       }
-      let key =  "1-" + await TokenUtil.getToken();
+      const key =  restaurantId + "-" + await TokenUtil.getToken();
       let res = await postRequest("/api/order-session", param, key);
       if (res.success) {
         let state = { restaurantId: restaurantId, orderId: res.data.id };
@@ -47,25 +50,6 @@ const CustomerLogin = (props) => {
 
   };
 
-  const getRestaurentId = async () => {
-    try {
-      let token = await TokenUtil.getToken();
-      let restaurantId;
-      jwt.verify(token, "hoi-lam-cai-gi-1999", (error, decoded) => {
-        if (error) {
-          return;
-        }
-        restaurantId = decoded.restaurantId;
-      });
-
-      let res = await fetch(ApiConstant.BASE_URL + "/api/table?restaurantId=" + restaurantId)
-        .then(res => res.json());
-      setRestaurantId(restaurantId);
-    } catch (error) {
-      console.log(error);
-    }
-
-  };
   return (
     <Box className={classes.boxParent}>
       <Box className={classes.box1}>
