@@ -1,6 +1,8 @@
+import { ApiConstant } from "../const";
+
 export const postRequest = async (url = '', data = {}, key) => {
   // Default options are marked with *
-  const response = await fetch("http://localhost:5000" + url, {
+  const response = await fetch(ApiConstant.BASE_URL + url, {
     method: 'POST', // *GET, POST, PUT, DELETE, etc.
     mode: 'cors', // no-cors, *cors, same-origin
     cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
@@ -19,7 +21,7 @@ export const postRequest = async (url = '', data = {}, key) => {
 
 export const putRequest = async (url = '', data = {}, key) => {
   // Default options are marked with *
-  const response = await fetch("http://localhost:5000" + url, {
+  const response = await fetch(ApiConstant.BASE_URL + url, {
     method: 'PUT', // *GET, POST, PUT, DELETE, etc.
     mode: 'cors', // no-cors, *cors, same-origin
     cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
@@ -38,7 +40,7 @@ export const putRequest = async (url = '', data = {}, key) => {
 
 export const deleteRequest = async (url = '', data = {}, token) => {
   // Default options are marked with *
-  const response = await fetch("http://localhost:5000" + url, {
+  const response = await fetch(ApiConstant.BASE_URL + url, {
     method: 'DELETE', // *GET, POST, PUT, DELETE, etc.
     mode: 'cors', // no-cors, *cors, same-origin
     cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached

@@ -25,6 +25,6 @@ app.get("/", function (req, res) {
   res.send("Server is running!");
 });
 
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 8888;
 console.log("ngay hien tai-------------",new Date())
 app.listen(port);
