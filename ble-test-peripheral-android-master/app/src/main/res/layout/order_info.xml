@@ -3,4 +3,24 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <ListView
+        android:id="@+id/itemList"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:padding="30dp"
+        android:layout_width="match_parent"
+        android:layout_height="0dip"
+        android:layout_weight="1"
+        android:gravity="center|bottom"
+        android:orientation="vertical" >
+        <Button
+            android:id="@+id/resolveOrderButton"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:text="Xử lý yêu cầu" />
+    </LinearLayout>
+
 </LinearLayout>
+

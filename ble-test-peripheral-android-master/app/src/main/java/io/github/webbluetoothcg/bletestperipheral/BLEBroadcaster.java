@@ -26,9 +26,12 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.UUID;
 
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+
 public class BLEBroadcaster extends ContextThemeWrapper {
 
-    private TokenUtil tokenUtil;
     private static final UUID CLIENT_CHARACTERISTIC_CONFIGURATION_UUID = UUID
             .fromString("00002902-0000-1000-8000-00805f9b34fb");
 
@@ -44,8 +47,7 @@ public class BLEBroadcaster extends ContextThemeWrapper {
     private BluetoothGattService mBatteryService;
     private BluetoothGattServer mGattServer;
 
-    public BLEBroadcaster(BluetoothManager test, TokenUtil tokenUtil){
-        this.tokenUtil = tokenUtil;
+    public BLEBroadcaster(BluetoothManager test){
         mBluetoothDevices = new HashSet<>();
         mBluetoothManager = test;
         mBluetoothAdapter = mBluetoothManager.getAdapter();
@@ -92,15 +94,22 @@ public class BLEBroadcaster extends ContextThemeWrapper {
                         /* value (optional) */ null);
                 return;
             }
-            String jwt="";
+            OkHttpClient client = new OkHttpClient();
+            Request request = new Request.Builder()
+                    .url("http://192.168.232.50:5000/api/key?restaurantId=1")
+                    .build();
+            String key = "";
             try {
-                jwt = tokenUtil.generateJWT();
-            } catch (Exception e) {
-                e.printStackTrace();
+                Response response = client.newCall(request).execute();
+                key = response.body().string();
+                characteristic.setValue(key.getBytes("UTF-8"));
+                Log.e("KEY IS", key);
+            }catch (Exception e){
+                key = "";
             }
 
             mGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS,
-                    offset, jwt.getBytes());
+                    offset, characteristic.getValue());
 
         }
         @Override

@@ -21,37 +21,74 @@ import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
+import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import org.jetbrains.annotations.Nullable;
 
-public class Peripherals extends ListActivity {
+import java.util.ArrayList;
+import java.util.List;
+
+import model.Item;
+import model.Order;
+
+
+public class Peripherals extends AppCompatActivity {
 
   private static final String[] PERIPHERALS_NAMES = new String[]{"Generate Token", "Heart Rate Monitor", "Health Thermometer"};
   public final static String EXTRA_PERIPHERAL_INDEX = "PERIPHERAL_INDEX";
+  private ViewPager mViewPager;
 
   @Override
-  protected void onCreate(Bundle savedInstanceState) {
+  protected void onCreate(@Nullable  Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_peripherals_list);
-    ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-        /* layout for the list item */ android.R.layout.simple_list_item_1,
-        /* id of the TextView to use */ android.R.id.text1,
-        /* values for the list */ PERIPHERALS_NAMES);
-    setListAdapter(adapter);
+//    ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+//        /* layout for the list item */ android.R.layout.,
+//        /* id of the TextView to use */ android.R.id.text1,
+//        /* values for the list */ PERIPHERALS_NAMES);
+//    setListAdapter(adapter);
+    initView();
 //    String secretKey = "ducnha99bn@1234";
-//    BLEBroadcaster broadcaster = new BLEBroadcaster((BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE), new TokenUtil(secretKey));
-//    broadcaster.start();
+    BLEBroadcaster broadcaster = new BLEBroadcaster((BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE));
+    broadcaster.start();
+
+//    TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+//    tabLayout.se
   }
 
-  @Override
-  protected void onListItemClick(ListView l, View v, int position, long id) {
-    super.onListItemClick(l, v, position, id);
+//  @Override
+//  protected void onListItemClick(ListView l, View v, int position, long id) {
+//    super.onListItemClick(l, v, position, id);
+//
+//    Intent intent = new Intent(this, Peripheral.class);
+//    intent.putExtra(EXTRA_PERIPHERAL_INDEX, position);
+//    startActivity(intent);
+//  }
 
-    Intent intent = new Intent(this, Peripheral.class);
-    intent.putExtra(EXTRA_PERIPHERAL_INDEX, position);
-    startActivity(intent);
+  private void initView(){
+    List<Order> orders = createOrder();
+    mViewPager = (ViewPager) findViewById(R.id.view_pager);
+    mViewPager.setAdapter(new MyAdapter(getSupportFragmentManager(), orders));
+    TabLayout mTabLayout = (TabLayout) findViewById(R.id.tab_layout);
+    mTabLayout.setupWithViewPager(mViewPager);
+  }
+
+  private List<Order> createOrder(){
+    List<Order> orders = new ArrayList<>();
+    List<Item> itemList1 = new ArrayList<>();
+    List<Item> itemList2 = new ArrayList<>();
+    itemList1.add(new Item(1L,"Món 1", "1"));
+    itemList1.add(new Item(2L,"Món 2", "2"));
+    itemList2.add(new Item(3L,"Món 3", "3"));
+    itemList2.add(new Item(4L,"Món 4", "4"));
+    orders.add(new Order("1","Bàn 1", "1",itemList1));
+    orders.add(new Order("2","Bàn 2", "2",itemList2));
+    return orders;
   }
 
 }
