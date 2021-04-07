@@ -9,6 +9,7 @@ const Restaurant = db.restaurant;
 const sequelize = db.sequelize;
 const imageToBase64 = require('image-to-base64');
 const { QueryTypes } = require('sequelize');
+const e = require("express");
 
 exports.createOrderSession = async (req, res) => {
     try {
@@ -205,6 +206,62 @@ exports.getKey = async (req, res) => {
             },
           });
         res.status(200).send(restaurant.dataValues.api_key);
+    } catch (error) {
+        console.log(error)
+        res.status(500).send({ success: false, error: error.message });
+    }
+};
+
+exports.getOrderPOS = async (req, res) => {
+    try {
+        sql = " SELECT";
+        sql += "    t.name AS tableName,"
+        sql += "    t.id AS tableId,"
+        sql += "    od.orderId,"
+        sql += "    i.id AS itemId,"
+        sql += "    i.name AS itemName, SUM(od.quantity) AS quantity"
+        sql += " FROM"
+        sql += "    orders o"
+        sql += "    JOIN `tables` t ON o.tableId = t.id"
+        sql += "    JOIN order_details od ON od.orderId = o.id"
+        sql += "    JOIN items i ON i.id = od.itemId"
+        sql += " WHERE"
+        sql += "    o.time_end IS NULL"
+        sql += "    AND od.status = 0"
+        sql += "    AND t.restaurantId = :restaurantId"
+        sql += " GROUP BY"
+        sql += "     t.id, i.id"
+        const orderDetails = await sequelize.query(
+            sql,
+            {
+                replacements: { restaurantId: req.query.restaurantId },
+                type: QueryTypes.SELECT
+            }
+        );
+        const response = [];
+        orderDetails.forEach(data => {
+            let isNotInRes = response.filter(e => e.tableId == data.tableId).length == 0 ;
+            if (isNotInRes){
+                let orderTable = orderDetails.filter(e => e.tableId == data.tableId);
+                let items = [];
+                orderTable.forEach(e => {
+                    let item = {};
+                    item.name = e.itemName;
+                    item.id = e.itemId;
+                    item.quantity = e.quantity;
+                    items.push(item);
+                })
+                let dataRes = {};
+                dataRes.tableId = data.tableId;
+                dataRes.tableName = data.tableName;
+                dataRes.orderId = data.orderId;
+                dataRes.items = items;
+                response.push(dataRes);
+            }
+        })
+        res.status(200).send(response);
+
+        
     } catch (error) {
         console.log(error)
         res.status(500).send({ success: false, error: error.message });

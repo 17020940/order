@@ -96,7 +96,7 @@ public class BLEBroadcaster extends ContextThemeWrapper {
             }
             OkHttpClient client = new OkHttpClient();
             Request request = new Request.Builder()
-                    .url("http://192.168.232.50:5000/api/key?restaurantId=1")
+                    .url(Constant.API_URL + "/api/key?restaurantId=1")
                     .build();
             String key = "";
             try {

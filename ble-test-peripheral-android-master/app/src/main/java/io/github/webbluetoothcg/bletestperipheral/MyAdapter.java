@@ -28,7 +28,19 @@ public class MyAdapter extends FragmentStatePagerAdapter {
 //            orderDetails.get(i).setItems(orders.get(i).getItems());
 //        }
     }
+    public void updateData(List<Order> orders){
+        this.orders = orders;
+        this.orderDetails = new ArrayList<>();
+        for (int i = 0 ; i < orders.size(); i++){
+            OrderDetail orderDetail = new OrderDetail();
+            orderDetail.setItems(orders.get(i).getItems());
+            orderDetails.add(orderDetail);
+            getItem(i);
+            notifyDataSetChanged();
+        }
+    }
 
+    
     @Override
     public Fragment getItem(int position) {
         return orderDetails.get(position);
@@ -43,4 +55,5 @@ public class MyAdapter extends FragmentStatePagerAdapter {
     public CharSequence getPageTitle(int position){
         return orders.get(position).getTableName();
     }
+
 }

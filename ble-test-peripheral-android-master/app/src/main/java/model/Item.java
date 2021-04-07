@@ -11,6 +11,10 @@ public class Item {
         this.quantity = quantity;
     }
 
+    public Item() {
+
+    }
+
     public Long getId() {
         return id;
     }

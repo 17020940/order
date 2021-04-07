@@ -10,6 +10,9 @@ public class Order {
     private String orderId;
     private List<Item> items;
 
+    public Order() {
+    }
+
     public Order(String tableId, String tableName, String orderId, List<Item> items) {
         this.tableId = tableId;
         this.tableName = tableName;

@@ -17,6 +17,7 @@ import adapter.ItemListApdapter;
 import model.Item;
 
 public class OrderDetail extends Fragment {
+
     private List<Item> items;
     private View mRootView;
     ItemListApdapter itemListApdapter;

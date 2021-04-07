@@ -47,6 +47,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import Bean.OrderBean;
 import model.Item;
 import model.Order;
 
@@ -64,41 +65,25 @@ public class Peripherals extends AppCompatActivity  {
   protected void onCreate(@Nullable  Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_peripherals_list);
-//    ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-//        /* layout for the list item */ android.R.layout.,
-//        /* id of the TextView to use */ android.R.id.text1,
-//        /* values for the list */ PERIPHERALS_NAMES);
-//    setListAdapter(adapter);
     initView();
-
     alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
     Intent alarmIntent = new Intent(this, MyBroadCastReceiver.class);
     pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, 0);
-//    String secretKey = "ducnha99bn@1234";
+    alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, new Date().getTime(), 30*1000, pendingIntent);
+
     BLEBroadcaster broadcaster = new BLEBroadcaster((BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE));
     broadcaster.start();
-    startAlarm();
-//    scheduleJob();
-//    schedule();
 
-//    TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
-//    tabLayout.se
   }
 
-//  @Override
-//  protected void onListItemClick(ListView l, View v, int position, long id) {
-//    super.onListItemClick(l, v, position, id);
-//
-//    Intent intent = new Intent(this, Peripheral.class);
-//    intent.putExtra(EXTRA_PERIPHERAL_INDEX, position);
-//    startActivity(intent);
-//  }
+
 
   private void initView(){
     List<Order> orders = createOrder();
     mViewPager = (ViewPager) findViewById(R.id.view_pager);
     mViewPager.setAdapter(new MyAdapter(getSupportFragmentManager(), orders));
+    OrderBean.setMyAdapter((MyAdapter) mViewPager.getAdapter());
     TabLayout mTabLayout = (TabLayout) findViewById(R.id.tab_layout);
     mTabLayout.setupWithViewPager(mViewPager);
   }
@@ -115,36 +100,7 @@ public class Peripherals extends AppCompatActivity  {
     orders.add(new Order("2","Bàn 2", "2",itemList2));
     return orders;
   }
-//
-//  public void scheduleJob() {
-//    ComponentName componentName = new ComponentName(this, OrderSchedule.class);
-//    JobInfo info = new JobInfo.Builder(123, componentName)
-//            .setRequiresCharging(true)
-//            .setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)
-//            .setPersisted(true)
-//            .setPeriodic(15 * 60 * 1000)
-//            .build();
-//    JobScheduler scheduler = (JobScheduler) getSystemService(JOB_SCHEDULER_SERVICE);
-//    int resultCode = scheduler.schedule(info);
-//    if (resultCode == JobScheduler.RESULT_SUCCESS) {
-//      Log.d("BEBUG", "Job scheduled");
-//    } else {
-//      Log.d("DEBUG", "Job scheduling failed");
-//    }
-//  }
 
-  private void startAlarm() {
-//    alarmManager.setExact(AlarmManager.RTC_WAKEUP, 1000, pendingIntent);
-    alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, new Date().getTime(), 30*1000, pendingIntent);
-//    alarmManager.set(AlarmManager.RTC_WAKEUP, 0, pendingIntent);
-//    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//      alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, 0, pendingIntent);
-//    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-//      alarmManager.setExact(AlarmManager.RTC_WAKEUP, 0, pendingIntent);
-//    } else {
-//      alarmManager.set(AlarmManager.RTC_WAKEUP, 0, pendingIntent);
-//    }
-  }
 }
 
 

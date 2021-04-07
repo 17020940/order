@@ -159,7 +159,7 @@ public class Peripheral extends Activity implements ServiceFragmentDelegate {
 
       OkHttpClient client = new OkHttpClient();
       Request request = new Request.Builder()
-              .url("http://192.168.232.16:5000/api/key?restaurantId=1")
+              .url(Constant.API_URL + "/api/key?restaurantId=1")
               .build();
       String key = "";
       try {

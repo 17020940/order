@@ -227,6 +227,11 @@ module.exports = (app) => {
     categoryCustomer.updateOrder
   );
 
+  app.get(
+    "/pos/api/order",
+    categoryCustomer.getOrderPOS
+  );
+
   const LanguageSchedule = require("../schedule/language.schedule");
 
   const StateInterval = () => {
