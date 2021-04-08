@@ -18,18 +18,14 @@ package io.github.webbluetoothcg.bletestperipheral;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
-import android.app.job.JobInfo;
-import android.app.job.JobScheduler;
 import android.bluetooth.BluetoothManager;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 
 //import androidx.annotation.NonNull;
 //import androidx.lifecycle.Lifecycle;
@@ -47,7 +43,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import Bean.OrderBean;
+import Bean.OrderDetailScreen;
 import model.Item;
 import model.Order;
 
@@ -75,6 +71,8 @@ public class Peripherals extends AppCompatActivity  {
     BLEBroadcaster broadcaster = new BLEBroadcaster((BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE));
     broadcaster.start();
 
+
+
   }
 
 
@@ -82,10 +80,14 @@ public class Peripherals extends AppCompatActivity  {
   private void initView(){
     List<Order> orders = createOrder();
     mViewPager = (ViewPager) findViewById(R.id.view_pager);
-    mViewPager.setAdapter(new MyAdapter(getSupportFragmentManager(), orders));
-    OrderBean.setMyAdapter((MyAdapter) mViewPager.getAdapter());
     TabLayout mTabLayout = (TabLayout) findViewById(R.id.tab_layout);
     mTabLayout.setupWithViewPager(mViewPager);
+//    mViewPager.setAdapter(new MyAdapter(getSupportFragmentManager(), orders));
+    OrderDetailScreen.handler = new Handler();
+    OrderDetailScreen.viewPager = mViewPager;
+    OrderDetailScreen.fragmentManager = getSupportFragmentManager();
+    OrderDetailScreen.updateView();
+
   }
 
   private List<Order> createOrder(){
