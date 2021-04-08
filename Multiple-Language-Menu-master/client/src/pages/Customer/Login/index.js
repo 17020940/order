@@ -57,7 +57,7 @@ const CustomerLogin = (props) => {
         <Box className={classes.box3} style={{ display: "block" }}>
           <form id="formLogin">
             <InputText
-              nameLabel={getLabel(LangConstant.TXT_USER_NAME)}
+              nameLabel={"Họ tên"}
               typeInput="text"
               nameText="username"
             />

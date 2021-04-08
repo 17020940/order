@@ -26,6 +26,9 @@ import android.os.Handler;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 
 //import androidx.annotation.NonNull;
 //import androidx.lifecycle.Lifecycle;
@@ -53,6 +56,7 @@ public class Peripherals extends AppCompatActivity  {
   private static final String[] PERIPHERALS_NAMES = new String[]{"Generate Token", "Heart Rate Monitor", "Health Thermometer"};
   public final static String EXTRA_PERIPHERAL_INDEX = "PERIPHERAL_INDEX";
   private ViewPager mViewPager;
+  private Button updateOrderButton;
 
   AlarmManager alarmManager;
   PendingIntent pendingIntent;
@@ -61,18 +65,21 @@ public class Peripherals extends AppCompatActivity  {
   protected void onCreate(@Nullable  Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_peripherals_list);
+    updateOrderButton = (Button) findViewById(R.id.updateOrderButton);
+    updateOrderButton.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        handleClickButon();
+      }
+    });
     initView();
     alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-
     Intent alarmIntent = new Intent(this, MyBroadCastReceiver.class);
     pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, 0);
     alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, new Date().getTime(), 30*1000, pendingIntent);
 
     BLEBroadcaster broadcaster = new BLEBroadcaster((BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE));
     broadcaster.start();
-
-
-
   }
 
 
@@ -88,6 +95,10 @@ public class Peripherals extends AppCompatActivity  {
     OrderDetailScreen.fragmentManager = getSupportFragmentManager();
     OrderDetailScreen.updateView();
 
+  }
+
+  private void handleClickButon(){
+    OrderDetailScreen.updateView();
   }
 
   private List<Order> createOrder(){

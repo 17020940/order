@@ -26,6 +26,11 @@
 <!--        android:id="@android:id/list"-->
 <!--        android:layout_width="match_parent"-->
 <!--        android:layout_height="379dp" />-->
+    <Button
+        android:id="@+id/updateOrderButton"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="Cập nhật yêu cầu" />
 
     <android.support.design.widget.TabLayout
         android:id="@+id/tab_layout"

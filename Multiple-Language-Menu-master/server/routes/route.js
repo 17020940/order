@@ -232,6 +232,11 @@ module.exports = (app) => {
     categoryCustomer.getOrderPOS
   );
 
+  app.post(
+    "/pos/api/resolve-order",
+    categoryCustomer.resolveOrder
+  );
+
   const LanguageSchedule = require("../schedule/language.schedule");
 
   const StateInterval = () => {

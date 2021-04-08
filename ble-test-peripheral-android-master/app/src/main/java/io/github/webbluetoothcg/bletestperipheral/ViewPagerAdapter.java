@@ -9,18 +9,19 @@ import java.util.List;
 
 import model.Order;
 
-public class MyAdapter extends FragmentStatePagerAdapter {
+public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
     private List<Order> orders;
     private List<OrderDetail> orderDetails;
 
-    public MyAdapter(FragmentManager fm, List<Order> orders) {
+    public ViewPagerAdapter(FragmentManager fm, List<Order> orders) {
         super(fm);
         this.orders = orders;
         this.orderDetails = new ArrayList<>();
         for (int i = 0 ; i < orders.size(); i++){
             OrderDetail orderDetail = new OrderDetail();
             orderDetail.setItems(orders.get(i).getItems());
+            orderDetail.setOrderId(orders.get(i).getOrderId());
             orderDetails.add(orderDetail);
         }
 

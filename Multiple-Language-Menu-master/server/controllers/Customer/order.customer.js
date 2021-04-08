@@ -85,8 +85,8 @@ exports.getItem = async (req, res) => {
 
         });
 
-        // let imageFoler = "C:/Users/DUC_NHA/Pictures/datn/";
-        let imageFoler = "C:/Users/Administrator/Pictures/datn/";
+        let imageFoler = "C:/Users/DUC_NHA/Pictures/datn/";
+        // let imageFoler = "C:/Users/Administrator/Pictures/datn/";
         let data = await Promise.all(
             items.map(async item => {
                 const data = await imageToBase64(imageFoler + item.dataValues.image_item)
@@ -227,7 +227,7 @@ exports.getOrderPOS = async (req, res) => {
         sql += "    JOIN items i ON i.id = od.itemId"
         sql += " WHERE"
         sql += "    o.time_end IS NULL"
-        sql += "    AND od.status = 0"
+        sql += "    AND od.status = 1"
         sql += "    AND t.restaurantId = :restaurantId"
         sql += " GROUP BY"
         sql += "     t.id, i.id"
@@ -262,6 +262,25 @@ exports.getOrderPOS = async (req, res) => {
         res.status(200).send(response);
 
         
+    } catch (error) {
+        console.log(error)
+        res.status(500).send({ success: false, error: error.message });
+    }
+};
+
+exports.resolveOrder = async (req, res) => {
+    try {
+        await OrderDetail.update(
+            {
+                status: 2
+            },
+
+            {
+                where: { orderId: req.body.orderId, status: 1}
+            },
+
+        );
+        res.status(200).send({ success: true });
     } catch (error) {
         console.log(error)
         res.status(500).send({ success: false, error: error.message });

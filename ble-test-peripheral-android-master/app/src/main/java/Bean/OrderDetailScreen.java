@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.github.webbluetoothcg.bletestperipheral.Constant;
-import io.github.webbluetoothcg.bletestperipheral.MyAdapter;
+import io.github.webbluetoothcg.bletestperipheral.ViewPagerAdapter;
 import model.Item;
 import model.Order;
 import okhttp3.Call;
@@ -72,7 +72,7 @@ public class OrderDetailScreen {
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
-                            viewPager.setAdapter(new MyAdapter(fragmentManager, orderList));
+                            viewPager.setAdapter(new ViewPagerAdapter(fragmentManager, orderList));
                         }
                     });
                     Log.d("res", "-------------------------:" + res);

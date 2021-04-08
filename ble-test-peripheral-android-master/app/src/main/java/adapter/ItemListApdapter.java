@@ -42,7 +42,7 @@ public class ItemListApdapter extends BaseAdapter {
 
         Item item = (Item) getItem(position);
         ((TextView) viewItem.findViewById(R.id.nameItem)).setText(item.getName());
-        ((TextView) viewItem.findViewById(R.id.quantity)).setText(String.format("Số lượng %s", item.getQuantity()));
+        ((TextView) viewItem.findViewById(R.id.quantity)).setText(String.format("Số lượng: %s", item.getQuantity()));
         return viewItem;
     }
 
