@@ -7,6 +7,7 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import Bean.CommonUtil;
 import io.github.webbluetoothcg.bletestperipheral.R;
 import model.Item;
 
@@ -43,6 +44,7 @@ public class ItemListApdapter extends BaseAdapter {
         Item item = (Item) getItem(position);
         ((TextView) viewItem.findViewById(R.id.nameItem)).setText(item.getName());
         ((TextView) viewItem.findViewById(R.id.quantity)).setText(String.format("Số lượng: %s", item.getQuantity()));
+        ((TextView) viewItem.findViewById(R.id.price)).setText(String.format("Giá: %s", CommonUtil.getMoneyCurrency(item.getPrice())));
         return viewItem;
     }
 

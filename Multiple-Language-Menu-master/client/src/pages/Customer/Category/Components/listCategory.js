@@ -19,9 +19,10 @@ import RemoveIcon from '@material-ui/icons/Remove';
 import PropTypes from 'prop-types';
 import { useTranslation } from "react-i18next";
 import { TokenUtil } from "../../../../utils/tokenUtil";
-import { ApiConstant } from "../../../../const";
+import { ApiConstant, PathConstant } from "../../../../const";
 import { postRequest } from "../../../../utils/apiUtil";
 import { Notify } from "../../../../components";
+import { useHistory } from "react-router-dom";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -62,7 +63,9 @@ function CategoryDetail({ category, value, index, orderId }) {
   const [isOpen, setIsOpen] = useState(false);
   const [item, setItem] = useState({});
   const [open, setOpen] = useState(false);
+  const [openError, setOpenError] = useState(false);
   const classes = useStyles();
+  const history = useHistory();
 
   const onClickItem = (indexItem) => {
     setItem(items[indexItem]);
@@ -75,7 +78,12 @@ function CategoryDetail({ category, value, index, orderId }) {
 
   const orderItem = async (item) => {
     try {
-      const key = "1-" + await TokenUtil.getToken();
+      let key = await TokenUtil.getToken();
+      if (!key){
+        setOpenError(true);
+        return;
+      }
+      key = "1-" + key;
       let param = {};
       param.orderId = orderId;
       param.itemId = item.id;
@@ -83,6 +91,8 @@ function CategoryDetail({ category, value, index, orderId }) {
       let res = await postRequest("/api/order-item", param, key);
       if (res.success){
         setOpen(true);
+      }else if (res.error == "orderIsEnd"){
+        history.push("");
       }
     } catch (error) {
       console.log(error)
@@ -147,6 +157,7 @@ function CategoryDetail({ category, value, index, orderId }) {
         </DialogActions>
       </Dialog>
       <Notify open={open} setOpen={setOpen} dataSuccess={'Thao tác thành công'} />
+      <Notify open={openError} setOpen={setOpenError} dataError={'Lỗi kết nối với POS'} />
     </TabPanel>
 
 

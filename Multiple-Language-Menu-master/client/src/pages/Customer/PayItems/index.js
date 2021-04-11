@@ -1,6 +1,6 @@
 import React, { memo, useState, useEffect } from "react";
 import {
-    makeStyles, Dialog, Box, DialogActions,
+    makeStyles, Dialog, Box, DialogActions,Button,
     DialogContent,
     TextField
 } from "@material-ui/core";
@@ -22,6 +22,8 @@ const PayItems = (props) => {
     const [isOpen, setIsOpen] = useState(false);
     const [item, setItem] = useState({});
     const [open, setOpen] = useState(false);
+    const [openError, setOpenError] = useState(false);
+    const [index, setIndex] = useState(null);
 
     useEffect(() => {
         getOrderDetail();
@@ -38,7 +40,8 @@ const PayItems = (props) => {
     }
 
     const editOrder = async (index) => {
-        if (items[index].status == 1) {
+        setIndex(index);
+        if (items[index].type == 0) {
             await setIsOpen(true);
             await setItem(items[index]);
             document.getElementsByName("quantity")[0].value = items[index].quantity;
@@ -49,9 +52,16 @@ const PayItems = (props) => {
         setIsOpen(false);
     }
 
-    const deleteOrder = async () => {
-        let token = await TokenUtil.getToken();
-        let res = await deleteRequest("/api/order-item", item, token);
+    const updateOrder = async () => {
+        let key = await TokenUtil.getToken();
+        if (!key){
+            setOpenError(true);
+            console.log("Lỗi kết nối với POS")
+            return;
+        }
+        key = "1-" + key;
+        let param = {orderId: props.location.state.orderId};
+        let res = await putRequest("/api/order-item", param, key);
         if (res.success) {
             setOpen(true);
         }
@@ -60,9 +70,35 @@ const PayItems = (props) => {
     }
 
     const updateItem = async () => {
-        const key = "1-" + await TokenUtil.getToken();
+        let key = await TokenUtil.getToken();
+        if (!key){
+            setOpenError(true);
+            console.log("Lỗi kết nối với POS")
+            return;
+        }
+        key = "1-" + key;
         let param = {orderId: props.location.state.orderId};
-        let res = await putRequest("/api/order-item", param, key);
+        param.quantity = +document.getElementsByName("quantity")[0].value;
+        param.itemId = items[index].itemId;
+        let res = await putRequest("/api/update-item", param, key);
+        if (res.success) {
+            setOpen(true);
+        }
+        setIsOpen(false);
+        getOrderDetail();
+    }
+
+    const deleteItem = async () => {
+        let key = await TokenUtil.getToken();
+        if (!key){
+            setOpenError(true);
+            console.log("Lỗi kết nối với POS")
+            return;
+        }
+        key = "1-" + key;
+        let param = {orderId: props.location.state.orderId};
+        param.itemId = items[index].itemId;
+        let res = await putRequest("/api/delete-item", param, key);
         if (res.success) {
             setOpen(true);
         }
@@ -113,11 +149,11 @@ const PayItems = (props) => {
             <Box className={classes.boxButton}>
                 <BoxButton
                     nameButton={'Cập nhật yêu cầu'}
-                    onClick={updateItem}
+                    onClick={updateOrder}
                 />
                 <span id="loginInfo" ></span>
             </Box>
-            {/* <Dialog open={isOpen} >
+            <Dialog open={isOpen} >
                 <DialogContent>
                     <Box style={{ color: 'black' }}>
                         <center>
@@ -147,13 +183,14 @@ const PayItems = (props) => {
                             Quay lại
                         </Button>
 
-                        <Button onClick={deleteOrder} color="primary">
+                        <Button onClick={deleteItem} color="primary">
                             Hủy món
                         </Button>
                     </DialogActions>
                 </DialogActions>
-            </Dialog> */}
+            </Dialog>
             <Notify open={open} setOpen={setOpen} dataSuccess={'Thao tác thành công'} />
+            <Notify open={openError} setOpen={setOpenError} dataError={'Lỗi kết nối với POS'} />
         </CustomerLayout>
 
 

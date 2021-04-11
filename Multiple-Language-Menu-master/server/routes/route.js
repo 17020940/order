@@ -207,7 +207,7 @@ module.exports = (app) => {
 
   app.post(
     "/api/order-item",
-    [middleware.verifyOrderToken],
+    [middleware.verifyOrderToken, middleware.verifyOrderId],
     categoryCustomer.orderItem
   ); 
 
@@ -223,9 +223,22 @@ module.exports = (app) => {
 
   app.put(
     "/api/order-item",
-    [middleware.verifyOrderToken],
+    [middleware.verifyOrderToken, middleware.verifyOrderId],
     categoryCustomer.updateOrder
   );
+
+  app.put(
+    "/api/update-item",
+    [middleware.verifyOrderToken, middleware.verifyOrderId],
+    categoryCustomer.updateItem
+  );
+
+  app.put(
+    "/api/delete-item",
+    [middleware.verifyOrderToken, middleware.verifyOrderId],
+    categoryCustomer.deleteItem
+  );
+
 
   app.get(
     "/pos/api/order",
@@ -235,6 +248,16 @@ module.exports = (app) => {
   app.post(
     "/pos/api/resolve-order",
     categoryCustomer.resolveOrder
+  );
+
+  app.get(
+    "/pos/api/payment",
+    categoryCustomer.getPaymentPOS
+  );
+
+  app.post(
+    "/pos/api/payment",
+    categoryCustomer.paymentPOS
   );
 
   const LanguageSchedule = require("../schedule/language.schedule");

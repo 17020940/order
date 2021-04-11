@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 const config = require("../configs/secret-key");
 const db = require("../models/index");
 const Restaurant = db.restaurant;
+const Order = db.order;
 
 exports.verifyTokenAdmin = (req, res, next) => {
   let token = req.headers["accesstoken"];
@@ -109,6 +110,27 @@ exports.verifyOrderToken = async (req, res, next) => {
       success: false,
       error: error,
     });
+  }
+
+};
+
+exports.verifyOrderId = async (req, res, next) => {
+  try {
+
+    let order = await Order.findOne({
+      where: {
+        id: req.body.orderId
+      }
+    })
+    console.log(order.dataValues)
+    if (order.dataValues.time_end){
+      console.log(order.dataValues)
+      return res.status(200).send({ success: false, error: "orderIsEnd" });
+    }
+
+    next();
+  } catch (error) {
+    res.status(500).send({ success: false, error: error.message });
   }
 
 };

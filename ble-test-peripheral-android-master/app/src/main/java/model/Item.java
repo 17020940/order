@@ -3,9 +3,10 @@ package model;
 public class Item {
     private Long id;
     private String name;
-    private String quantity;
+    private Integer quantity;
+    private Double price;
 
-    public Item(Long id, String name, String quantity) {
+    public Item(Long id, String name, Integer quantity) {
         this.id = id;
         this.name = name;
         this.quantity = quantity;
@@ -13,6 +14,14 @@ public class Item {
 
     public Item() {
 
+    }
+
+    public Double getPrice() {
+        return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
     }
 
     public Long getId() {
@@ -31,11 +40,11 @@ public class Item {
         this.name = name;
     }
 
-    public String getQuantity() {
+    public Integer getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(String quantity) {
+    public void setQuantity(Integer quantity) {
         this.quantity = quantity;
     }
 }

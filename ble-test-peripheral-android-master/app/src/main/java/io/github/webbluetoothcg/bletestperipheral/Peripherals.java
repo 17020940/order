@@ -57,6 +57,7 @@ public class Peripherals extends AppCompatActivity  {
   public final static String EXTRA_PERIPHERAL_INDEX = "PERIPHERAL_INDEX";
   private ViewPager mViewPager;
   private Button updateOrderButton;
+  private Button paymentButton;
 
   AlarmManager alarmManager;
   PendingIntent pendingIntent;
@@ -77,7 +78,7 @@ public class Peripherals extends AppCompatActivity  {
     Intent alarmIntent = new Intent(this, MyBroadCastReceiver.class);
     pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, 0);
     alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, new Date().getTime(), 30*1000, pendingIntent);
-
+    handleClickPaymentButton();
     BLEBroadcaster broadcaster = new BLEBroadcaster((BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE));
     broadcaster.start();
   }
@@ -85,7 +86,6 @@ public class Peripherals extends AppCompatActivity  {
 
 
   private void initView(){
-    List<Order> orders = createOrder();
     mViewPager = (ViewPager) findViewById(R.id.view_pager);
     TabLayout mTabLayout = (TabLayout) findViewById(R.id.tab_layout);
     mTabLayout.setupWithViewPager(mViewPager);
@@ -101,17 +101,20 @@ public class Peripherals extends AppCompatActivity  {
     OrderDetailScreen.updateView();
   }
 
-  private List<Order> createOrder(){
-    List<Order> orders = new ArrayList<>();
-    List<Item> itemList1 = new ArrayList<>();
-    List<Item> itemList2 = new ArrayList<>();
-    itemList1.add(new Item(1L,"Món 1", "1"));
-    itemList1.add(new Item(2L,"Món 2", "2"));
-    itemList2.add(new Item(3L,"Món 3", "3"));
-    itemList2.add(new Item(4L,"Món 4", "4"));
-    orders.add(new Order("1","Bàn 1", "1",itemList1));
-    orders.add(new Order("2","Bàn 2", "2",itemList2));
-    return orders;
+  private void handleClickPaymentButton(){
+    paymentButton = (Button) findViewById(R.id.paymentButton);
+    paymentButton.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        goToPaymentActivity();
+        Log.d("DEBUG", "-------------------------Vasdadadasdasdasdasdsd-----------------");
+      }
+    });
+  }
+
+  private void goToPaymentActivity(){
+    Intent intent = new Intent(this, PaymentActivity.class);
+    startActivity(intent);
   }
 
 }

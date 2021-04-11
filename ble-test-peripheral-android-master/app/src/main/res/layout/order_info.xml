@@ -6,19 +6,21 @@
     <ListView
         android:id="@+id/itemList"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="456dp" />
 
     <LinearLayout
         android:padding="30dp"
         android:layout_width="match_parent"
         android:layout_height="0dip"
         android:layout_weight="1"
+        android:background="@android:color/background_light"
         android:gravity="center|bottom"
         android:orientation="vertical" >
         <Button
             android:id="@+id/resolveOrderButton"
             android:layout_width="match_parent"
             android:layout_height="50dp"
+            android:background="@color/primary"
             android:text="Xử lý yêu cầu" />
     </LinearLayout>
 

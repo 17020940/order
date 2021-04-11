@@ -12,7 +12,6 @@ export class TokenUtil {
         })
         this.gattServer = await device.gatt.connect();
       }
-      console.log(this.gattServer)
       const service = await this.gattServer.getPrimaryService('battery_service');
       const characteristic = await service.getCharacteristic('battery_level');
       const value = await characteristic.readValue();

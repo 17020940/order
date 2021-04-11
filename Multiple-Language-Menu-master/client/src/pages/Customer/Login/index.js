@@ -1,14 +1,12 @@
 import React, { memo, useState, useEffect } from "react";
 import { PathConstant, LangConstant } from "../../../const";
-import { makeStyles, Box, Select, MenuItem, InputLabel, FormControl } from "@material-ui/core";
+import { makeStyles, Box } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 import { BoxButton, InputText } from "../../../components";
 import { TokenUtil } from "../../../utils/tokenUtil";
-import { Redirect } from "react-router-dom";
 import { useHistory } from "react-router-dom";
 import { postRequest } from "../../../utils/apiUtil";
-import { ApiConstant } from "../../../const";
-const jwt = require("jsonwebtoken");
+import { Notify } from "../../../components";
 
 const CustomerLogin = (props) => {
   const history = useHistory();
@@ -16,13 +14,11 @@ const CustomerLogin = (props) => {
   const { t: getLabel } = useTranslation();
   const [restaurantId, setRestaurantId] = useState(props.location.state.restaurantId);
   const [tableId, setTableId] = useState(props.location.state.tableId);
+  const [open, setOpen] = useState(false);
 
   const onChange = () => {
     document.getElementById("telephoneInput").textContent = "";
   }
-
-  console.log()
-
 
   const onLogin = async () => {
     try {
@@ -31,12 +27,17 @@ const CustomerLogin = (props) => {
       param.name = document.getElementsByName('username')[0].value;
       param.telephone = document.getElementsByName('telephone')[0].value;
       param.email = document.getElementsByName('email')[0].value;
-      param.tableId = 4;
+      param.tableId = tableId;
       if (!param.telephone || param.telephone == "") {
         document.getElementById("telephoneInput").textContent = "Không được để trống trường này";
         return;
+      } 
+      let key =  await TokenUtil.getToken();
+      if (!key){
+        document.getElementById("loginInfo").textContent = "Lỗi kết nối với POS";
+        return;
       }
-      const key =  restaurantId + "-" + await TokenUtil.getToken();
+      key =  restaurantId + "-" + key;
       let res = await postRequest("/api/order-session", param, key);
       if (res.success) {
         let state = { restaurantId: restaurantId, orderId: res.data.id };
@@ -83,6 +84,7 @@ const CustomerLogin = (props) => {
             <span id="loginInfo" ></span>
           </Box>
         </Box>
+      <Notify open={open} setOpen={setOpen} dataError={'Lỗi kết nối với POS'} />
       </Box>
     </Box>
   );

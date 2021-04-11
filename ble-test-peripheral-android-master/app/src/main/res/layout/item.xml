@@ -5,21 +5,28 @@
 
     <TextView
         android:id="@+id/nameItem"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="30dp"
         android:paddingLeft="10dp"
         android:textSize="16dp"
-        android:text="1"
         android:textColor="@android:color/black"
         android:textStyle="bold" />
 
     <TextView
         android:id="@+id/quantity"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:textSize="16dp"
         android:paddingLeft="10dp"
         android:layout_height="30dp"
-        android:text="ProductName"
+        android:textColor="@android:color/black"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/price"
+        android:layout_width="wrap_content"
+        android:textSize="16dp"
+        android:paddingLeft="10dp"
+        android:layout_height="30dp"
         android:textColor="@android:color/black"
         android:textStyle="bold" />
 

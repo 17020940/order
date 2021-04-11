@@ -3,7 +3,7 @@ module.exports = (sequelize, Sequelize) => {
     orderId: Sequelize.BIGINT,
     itemId: Sequelize.BIGINT,
     quantity: Sequelize.INTEGER,
-    parentId: Sequelize.BIGINT,
+    childrenId: Sequelize.BIGINT,
     status: Sequelize.INTEGER
   });
   return OrderDetail;
