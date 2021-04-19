@@ -67,9 +67,10 @@ function CategoryDetail({ category, value, index, orderId }) {
   const classes = useStyles();
   const history = useHistory();
 
-  const onClickItem = (indexItem) => {
-    setItem(items[indexItem]);
-    setIsOpen(true);
+  const onClickItem = async (indexItem) => {
+    await setItem(items[indexItem]);
+    await setIsOpen(true);
+    document.getElementsByName("quantity")[0].value = 1;
   }
 
   const handleClose = () => {
@@ -79,7 +80,7 @@ function CategoryDetail({ category, value, index, orderId }) {
   const orderItem = async (item) => {
     try {
       let key = await TokenUtil.getToken();
-      if (!key){
+      if (!key) {
         setOpenError(true);
         return;
       }
@@ -89,9 +90,9 @@ function CategoryDetail({ category, value, index, orderId }) {
       param.itemId = item.id;
       param.quantity = +document.getElementsByName("quantity")[0].value;
       let res = await postRequest("/api/order-item", param, key);
-      if (res.success){
+      if (res.success) {
         setOpen(true);
-      }else if (res.error == "orderIsEnd"){
+      } else if (res.error == "orderIsEnd") {
         history.push("");
       }
     } catch (error) {
@@ -99,6 +100,18 @@ function CategoryDetail({ category, value, index, orderId }) {
     }
     setIsOpen(false);
 
+  }
+
+  const addQuantity = () => {
+    let quantity = +document.getElementsByName("quantity")[0].value ;
+    document.getElementsByName("quantity")[0].value = quantity + 1;
+  }
+
+  const minusQuantity = () => {
+    let quantity = +document.getElementsByName("quantity")[0].value ;
+    if(quantity > 1){
+      document.getElementsByName("quantity")[0].value = quantity - 1;
+    }
   }
 
   useEffect(() => {
@@ -120,7 +133,9 @@ function CategoryDetail({ category, value, index, orderId }) {
                 className={classes.boxItem} onClick={() => onClickItem(index)} />
               <center>
                 <p style={{ color: 'black' }}>{item.name}</p>
-                <p style={{ color: 'gray', fontSize: '13px' }}>{item.price}</p>
+                <p style={{ color: 'gray', fontSize: '13px' }}>
+                  {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.price)}
+                </p>
               </center>
             </Grid>
           })
@@ -134,25 +149,25 @@ function CategoryDetail({ category, value, index, orderId }) {
             </center>
           </Box>
           <div style={{ display: 'flex', alignItems: 'center' }}>
-            <AddIcon style={{ color: 'black', cursor: "pointer" }} />
+            <AddIcon onClick={addQuantity} style={{ color: 'black', cursor: "pointer" }} />
 
             <TextField
               className={`${classes.rootTextField}`}
-              style={{ color: 'black !important', marginLeft:'20px', marginRight: '20px' }}
+              style={{ color: 'black !important', marginLeft: '20px', marginRight: '20px' }}
               type="number"
               name="quantity"
             />
-            <RemoveIcon style={{ color: 'black', cursor: "pointer" }} />
+            <RemoveIcon onClick={minusQuantity} style={{ color: 'black', cursor: "pointer" }} />
           </div>
 
         </DialogContent>
-        <DialogActions style ={{justifyContent : 'space-around'}}>
+        <DialogActions style={{ justifyContent: 'space-around' }}>
 
-              <Button onClick={() => orderItem(item)} color="primary">
-                Thêm
+          <Button onClick={() => orderItem(item)} color="primary">
+            Thêm
           </Button>
-              <Button onClick={handleClose} color="primary">
-                Hủy
+          <Button onClick={handleClose} color="primary">
+            Hủy
           </Button>
         </DialogActions>
       </Dialog>
@@ -175,7 +190,7 @@ function SimpleTabs({ categories, orderId }) {
   return (
     <>
       <div className={classes.root}>
-        <AppBar  position="static" style={{ boxShadow: 'none' }}>
+        <AppBar position="static" style={{ boxShadow: 'none' }}>
           <Tabs value={value} onChange={handleChange} variant="scrollable" indicatorColor="secondary"
             textColor="secondary" scrollButtons="auto" aria-label="simple tabs example" >
             {

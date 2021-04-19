@@ -106,8 +106,9 @@ const CustomerLayout = ({children, props, isDetailOrder}) => {
             className={`${classes.orderButton} ${classes.boxChange}`}
             onClick={orderDetail}
             // disableRipple
-          >              <Restaurant />
-              <Box className={classes.boxPosition}>1</Box>
+          >             
+           <Restaurant />
+              {/* <Box className={classes.boxPosition}>1</Box> */}
           </IconButton>
         </Toolbar>
       </AppBar>

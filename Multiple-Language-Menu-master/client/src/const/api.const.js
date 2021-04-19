@@ -1,4 +1,5 @@
 // Common
+// export const BASE_URL = "http://112.137.129.236:8888";
 export const BASE_URL = "http://localhost:5000";
 export const HEADER_DEFAULT = {
   Accept: "application/json",
