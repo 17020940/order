@@ -19,7 +19,7 @@ export class TokenUtil {
       return decoder.decode(value.buffer);
     } catch (error) {
       console.log(error);
-      gattServer = null
+      this.gattServer = null;
       return null;
     }
 
