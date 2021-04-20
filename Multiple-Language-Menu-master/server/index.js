@@ -26,5 +26,4 @@ app.get("/", function (req, res) {
 });
 
 const port = process.env.PORT || 8888;
-console.log("ngay hien tai-------------",new Date())
 app.listen(port);

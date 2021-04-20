@@ -53,11 +53,14 @@ public class PaymentDetail extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mRootView = inflater.inflate(R.layout.payment, container, false);
         button = (Button) mRootView.findViewById(R.id.paymentBtn);
+        paymentMoney = 0D;
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 try {
-                    handleClickButon();
+                    if (paymentMoney >= total){
+                        handleClickButon();
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
